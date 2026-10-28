@@ -1,0 +1,28 @@
+name: Bug report
+description: Something does not work as specified
+labels: [bug]
+body:
+  - type: input
+    id: requirement
+    attributes:
+      label: Affected requirement
+      placeholder: "FR-009"
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options: [Critical, Major, Minor]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true

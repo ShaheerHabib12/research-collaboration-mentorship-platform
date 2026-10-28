@@ -1,0 +1,17 @@
+# Local PostgreSQL for development only. Start with: docker compose up -d
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rcmp_user
+      POSTGRES_PASSWORD: change_me
+      POSTGRES_DB: rcmp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./server/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  pgdata:
