@@ -11,6 +11,23 @@ jobs:
     defaults:
       run:
         working-directory: server
+    # PostgreSQL service so the schema tests run against a real database.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: rcmp_user
+          POSTGRES_PASSWORD: change_me
+          POSTGRES_DB: rcmp
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rcmp_user -d rcmp"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://rcmp_user:change_me@localhost:5432/rcmp
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
