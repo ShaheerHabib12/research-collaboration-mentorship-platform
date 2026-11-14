@@ -10,7 +10,8 @@
 2. Create a branch from `main`, write the test case first (see `docs/TEST_PLAN.md`), then the code.
 3. `npm test` and `npm run coverage` locally. Tests need PostgreSQL: `docker compose up -d db` then `export TEST_DATABASE_URL=postgres://rcmp:rcmp@localhost:5432/postgres`.
 4. Open a pull request using the template; GitHub Actions runs unit tests, the full suite with a coverage gate, and the load test.
-5. Squash-merge after review; delete the branch.
+5. Squash-merge after review (the commit stays under the name of the person who opened the pull request); delete the branch.
+6. Team code pieces (tags, match, relativeTime) follow the steps in `docs/CONTRIBUTING_STEPS.md`; proof links go in `docs/EVIDENCE.md`.
 
 ## Code style
 Plain JavaScript, no build step, no runtime dependencies. Public functions get a doc comment that names the requirement they implement. Never put secrets in the repository.

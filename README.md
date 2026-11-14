@@ -11,7 +11,7 @@
 ![Backend](https://img.shields.io/badge/Backend-Node.js%2024%20%C2%B7%20Express%205-339933)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL%2016-336791)
 ![Tests](https://img.shields.io/badge/Tests-224%20passing-0d9488)
-![Coverage](https://img.shields.io/badge/Coverage-97.9%25%20lines-0d9488)
+![Coverage](https://img.shields.io/badge/Coverage-97.8%25%20lines-0d9488)
 ![Mutation score](https://img.shields.io/badge/Mutation%20score-92%25-0d9488)
 ![Status](https://img.shields.io/badge/Status-Coursework%202-d97706)
 [![CI](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml)
@@ -29,7 +29,7 @@
 | API | 71 routes, Express 5 | `docs/API.md`, `docs/source/api.rst` |
 | Code size | 2,647 lines server and shared, 4,151 lines client, 2,109 lines of tests | `wc -l` |
 | Automated tests | 224 in 20 suites, all passing | `npm test`, `docs/evidence/TEST_REPORT.txt` |
-| Coverage (server and shared code) | 97.9 % lines, 82.6 % branches, 93.6 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
+| Coverage (server and shared code) | 97.8 % lines, 82.6 % branches, 93.4 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
 | Mutation score (shared rules) | 92.1 % of 766 mutants caught | `npm run mutation` |
 | Accessibility | no serious or critical axe-core finding on 24 routes at 360, 768 and 1280 px | test TC-E2E-10 |
 | Load (50 users, 2,000 requests, in process) | p95 about 200 ms, no server errors | `npm run load` |
@@ -170,6 +170,7 @@ Details, the Coursework 1 to Coursework 2 changes and the rationale are in [`doc
 │   ├── db.js  pool.js        schema, migrations, Unit of Work, pg pool
 │   ├── auth.js  storage.js  assistant.js  mailer.js  seed.js  backup.js
 ├── shared/                   validators.js, rules.js, constants.js - used by browser and server
+│   └── contrib/              three team pieces (tags, match, relativeTime); tests in tests/contrib
 ├── tests/                    Jest suites (unit, property, db, API, security, contract, smoke, assistant), tests/e2e (Playwright + axe), load.js
 ├── stryker.config.json       mutation testing of the shared rules
 ├── cypress/  cypress.config.js   Cypress specs (UC-02, UC-04, NFR-011/013)
@@ -260,6 +261,7 @@ Copy [`.env.example`](.env.example) and set the variables in your environment. T
 | `npm run k6` | k6 load test: 50 users for 15 minutes (needs k6 installed) |
 | `npm run coverage` | Full suite with the coverage gate (lines ≥ 90 %, functions ≥ 85 %) |
 | `npm run report` | Write `docs/evidence/TEST_REPORT.txt` and `COVERAGE_REPORT.txt` |
+| `npm run contrib` | Run the 24 team contribution tests (skipped until each member turns theirs on; `docs/CONTRIBUTING_STEPS.md`) |
 | `npm run load` | Node load smoke test: 50 concurrent users, 2,000 requests, p95 must stay under 2 s |
 | `npm run backup` | `pg_dump` with a checksummed manifest |
 | `npm run lint` | ESLint over server, shared, tests, client, Cypress and k6 |
@@ -286,14 +288,14 @@ Tests run against the **real HTTP server and a real PostgreSQL database**, each 
 | Security scan | OWASP ZAP baseline (CI job) | passive scan of the running app |
 | Dependencies and style | `npm audit`, ESLint | 0 known vulnerable packages; 0 lint errors |
 
-**Latest local run (Node 22.23, PostgreSQL 16): 224 of 224 pass; 97.9 % lines, 82.6 % branches, 93.6 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. The Cypress, k6, ZAP, Docker and GitHub Actions files are written but have to be run on a machine or runner with those tools; the test plan says which results are real and which are pending.
+**Latest local run (Node 22.23, PostgreSQL 16): 224 of 224 pass; 97.8 % lines, 82.6 % branches, 93.4 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. Cypress, k6, ZAP and the Firefox and WebKit tests run in GitHub Actions (links in `docs/EVIDENCE.md`); Docker is not run in the build sandbox. The test plan says which results are real and which are pending.
 
 ## 12. Development workflow
 
 - `main` is always releasable; changes arrive by pull request with passing CI and one review. Turn on branch protection for `main` in GitHub (Settings, Branches) so the rule is enforced, not just written.
 - Branches: `feature/<issue>-<name>`, `fix/<issue>-<name>`, `docs/<topic>`. Commit format (Conventional Commits): `type(area): what changed (#issue)`, e.g. `fix(tests): steady the sidebar check`.
 - Write the test case first (the plan is in `docs/TEST_PLAN.md`), then the code.
-- GitHub Actions runs lint, the Vite build, the dependency audit, the smoke, unit, property, security, contract and API tests, the browser tests in Chromium, Firefox and WebKit, the coverage gate, mutation testing, the load smoke test, Cypress, a 1-minute k6 run and the ZAP baseline, and uploads the evidence files.
+- GitHub Actions runs lint, the Vite build, the dependency audit, the smoke, unit, property, security, contract and API tests, the browser tests in Chromium, Firefox and WebKit, the coverage gate, mutation testing, the load smoke test, the team contribution tests, Cypress, a 1-minute k6 run and the ZAP baseline, uploads the evidence files and writes the run link, commit link and test totals to the run summary.
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) and the templates in `.github/`.
 
@@ -318,7 +320,7 @@ Stated plainly so nobody is surprised:
 - The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
 - Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
 - TLS is provided by the host or reverse proxy, not by the Node process.
-- Docker and the 15-minute k6 run were not executed in the build sandbox. GitHub Actions ran on 14 November 2026. The latest run passed the main job (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress and the OWASP ZAP baseline (0 FAIL, 0 WARN, 67 PASS, 4 ignored with a reason in `.zap/rules.tsv`). The first k6 run used one virtual user because k6 reads `K6_DURATION` itself; the variable is now `LOAD_DURATION` and the 50-user, 1-minute result is pending. The Firefox and WebKit browser tests failed on timing in some runs; the fixes (key routes for axe, instant scroll, no sidebar animation, one retry) are in `tests/e2e/e2e.test.js` and a new run is pending. See `docs/TEST_PLAN.md`.
+- Docker and the 15-minute k6 run were not executed in the build sandbox. GitHub Actions ran on 14 November 2026 (links in `docs/EVIDENCE.md`). In the latest completed run (commit `c6654e9`) the main job (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress, Firefox and the 50-user k6 test passed. k6 ran 50 virtual users for 1 minute: 12,172 requests, 0 % failed, p95 10.4 ms, 12,168 of 12,168 checks passed. Two jobs failed and are fixed in the next commit: WebKit (the wait for a page heading on one route was 8 s; it now waits up to 20 s and reloads once) and ZAP (one "Base64 Disclosure" warning on the bundled font stylesheet, which holds no base64 data; rule 10094 is ignored with a reason in `.zap/rules.tsv`). Both fixes wait for a new run. See `docs/TEST_PLAN.md`.
 - No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
 ## 15. Team
@@ -333,7 +335,7 @@ Stated plainly so nobody is surprised:
 | Ahmad Riaz (Up2601151) | Team Member |
 | Hafiz Muhammad Abu Hurraira (Up2601139) | Team Member |
 
-Individual contributions are recorded in the report's Contributions Table and are visible in the commit history.
+Individual contributions are recorded in the report's Contributions Table and are visible in the commit history. Each member's code piece, the steps to add it and the proof links are in [`docs/CONTRIBUTING_STEPS.md`](docs/CONTRIBUTING_STEPS.md) and [`docs/EVIDENCE.md`](docs/EVIDENCE.md).
 
 ## 16. Documentation
 
@@ -348,6 +350,8 @@ Individual contributions are recorded in the report's Contributions Table and ar
 | [`docs/DESIGN_AND_AUDIT.md`](docs/DESIGN_AND_AUDIT.md) | UI/UX decisions and self-audits |
 | [`docs/USER_TESTING.md`](docs/USER_TESTING.md) | usability test protocol |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | branching, commits, reviews |
+| [`docs/CONTRIBUTING_STEPS.md`](docs/CONTRIBUTING_STEPS.md) | step-by-step guide for a member to add a code piece |
+| [`docs/EVIDENCE.md`](docs/EVIDENCE.md) | links to the pull request, every CI run and each member's contribution |
 
 ## 17. Troubleshooting
 

@@ -39,7 +39,7 @@ The system follows the Coursework 1 design: a **closed three-layer modular monol
 
 **Single-page client.** Express serves `client/dist` and falls back to `index.html` for client routes. A 301 redirect maps legacy `/page.html` links (kept in seed data, notifications and e-mails) to the clean routes (`/page`).
 
-**Shared rules.** `shared/validators.js`, `rules.js` and `constants.js` are loaded by both the browser (instant feedback) and the server (authority). The server never trusts the browser: every limit is re-checked, and the database repeats the most important ones as `CHECK`/`UNIQUE` constraints.
+**Shared rules.** `shared/validators.js`, `rules.js` and `constants.js` are loaded by both the browser (instant feedback) and the server (authority). The server never trusts the browser: every limit is re-checked, and the database repeats the most important ones as `CHECK`/`UNIQUE` constraints. `shared/contrib/` holds three small pure functions (`normaliseTags`, `matchScore`, `relativeTime`) written by team members; they are not called by the app yet and have their own tests in `tests/contrib` (`docs/CONTRIBUTING_STEPS.md`).
 
 ## Changes from the Coursework 1 design (for report section 3.2)
 
@@ -54,7 +54,7 @@ The first implementation drifted from Coursework 1 (vanilla JavaScript, `node:ht
 | Real administrator account | not specified | `muhammad.habib@myport.ac.uk`, created on first start with its own password | Separates the real admin from demo accounts. |
 | Payment provider (C10) | external provider | **sandbox** outcome selector (success / failed / pending) | No provider test-mode account was available; entitlements change only on confirmed success. |
 | TLS (NFR-003) | HTTPS | provided by the host or reverse proxy; the app redirects and sends HSTS with `RCMP_FORCE_HTTPS=1` | Node does not terminate TLS itself in this design. |
-| Cypress, k6, ZAP, Docker, GitHub Actions | specified | files written (`cypress/`, `k6/`, `.zap/`, `Dockerfile`, `.github/workflows/ci.yml`) | Could not be executed in the build sandbox; Playwright + axe-core and a Node load test were run instead for the same checks (see `TEST_PLAN.md`). |
+| Cypress, k6, ZAP, Docker, GitHub Actions | specified | files written (`cypress/`, `k6/`, `.zap/`, `Dockerfile`, `.github/workflows/ci.yml`) | Cypress, k6 and ZAP run in GitHub Actions (links in `EVIDENCE.md`). Docker could not be run in the build sandbox; Playwright + axe-core and a Node load test were also run locally for the same checks (see `TEST_PLAN.md`). |
 
 ## Data model (tables)
 
@@ -102,6 +102,6 @@ Each row also holds the full entity as JSONB in `data`, next to the constrained 
 5. **Throttles are in memory**, per process; use a shared store for several instances.
 6. **No malware scanning** of uploads; type and size are validated only.
 7. **Payments and payouts are sandbox simulations**; no real provider is called.
-8. **Browser tests run in Chromium only**; Firefox and Safari are untested.
-9. **Cypress, k6, ZAP, Docker and GitHub Actions have not been executed yet** by the team (see `TEST_PLAN.md`).
+8. **Browser tests run in Chromium locally; Firefox and WebKit run only in GitHub Actions** (with one retry on a timing failure). Real Safari and real phones are untested.
+9. **Docker and the 15-minute k6 run have not been executed yet** by the team (see `TEST_PLAN.md`).
 10. **No real-user usability study yet** (NFR-014).

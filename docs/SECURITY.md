@@ -27,7 +27,7 @@ This file lists what RCMP does to protect its users and data, which tests check 
 | Injection, broken access, token attacks, headers, oversized and malformed input, file-name tricks | `tests/security.test.js` (TC-SEC-01 to TC-SEC-11) |
 | Hidden files and project folders return 404, `robots.txt` and `security.txt` are served | TC-SEC-11 |
 | Dependencies | `npm audit --omit=dev` (0 known vulnerabilities when last run) |
-| Static scan of the running app | OWASP ZAP baseline in `.zap` and CI. First run on GitHub Actions: 0 FAIL, 7 WARN, 63 PASS. Fixed in code: Permissions-Policy, Cross-Origin-Embedder-Policy, no inline styles in the CSP, fonts bundled with the app instead of an outside font link. Ignored with a reason in `.zap/rules.tsv`: 10049 (API answers are `no-store` on purpose), 10109 (single-page-app note), 90005 (the scanner leaves out Sec-Fetch-Dest). Second run: 0 FAIL, 0 WARN, 67 PASS, 4 ignored |
+| Static scan of the running app | OWASP ZAP baseline in `.zap` and CI. First run on GitHub Actions: 0 FAIL, 7 WARN, 63 PASS. Fixed in code: Permissions-Policy, Cross-Origin-Embedder-Policy, no inline styles in the CSP, fonts bundled with the app instead of an outside font link. Ignored with a reason in `.zap/rules.tsv`: 10049 (API answers are `no-store` on purpose), 10109 (single-page-app note), 90005 (the scanner leaves out Sec-Fetch-Dest), 10094 (Base64 Disclosure: the bundled font stylesheet has no base64 data; a search of the built file found none). Latest run (commit `c6654e9`): 0 FAIL, 1 WARN (10094), 66 PASS, 4 ignored; with 10094 ignored the next run should show 0 WARN |
 
 ## Known limits
 

@@ -121,7 +121,7 @@ For every endpoint the following classes are covered at least once across the AP
 | NFR-001 | Role and membership permissions | TC-API-05, 06, 13, 19, 24, 25, 35, TC-E2E-02 | - |
 | NFR-002 | Salted password hashing, no raw passwords in logs | TC-A01, A02, API-02, API-04, API-54 | - |
 | NFR-003 | HTTPS/TLS in deployed environments | TC-API-58 (308 redirect), TC-API-57 (HSTS header) | TLS itself is terminated by a proxy and is not tested here |
-| NFR-004 | Injection, XSS, broken access control | TC-V07, API-03, 10, 30, 59, E2E-05 | OWASP ZAP baseline job is defined in `ci.yml` and has **not been run yet**; no scanner result exists |
+| NFR-004 | Injection, XSS, broken access control | TC-V07, API-03, 10, 30, 59, E2E-05 | OWASP ZAP baseline runs in `ci.yml` on every push; its results are in the table of section 4 and in `docs/EVIDENCE.md` |
 | NFR-005 | Privacy notice, data minimisation | TC-API-07 (field visibility) | Field-purpose review table: manual, with the privacy notice |
 | NFR-006 | Account deletion, review and update of profile | TC-API-08, 09 | 30-day retention is documented, not time-tested |
 | NFR-007 | Validation with understandable errors | TC-V01-V09, API-01, 08, 20, E2E-03, E2E-04 | - |
@@ -135,7 +135,7 @@ For every endpoint the following classes are covered at least once across the AP
 | NFR-015 | Pagination | TC-API-10, API-56 (500 records, <= 20 per page) | - |
 | NFR-016 | Logs free of passwords, tokens, file contents | TC-API-04 | - |
 | NFR-017 | Separable modules with tests per module | Account TC-API-01-09, 54; projects 12-17; requests 15-17; workspace 19-26, 44; mentorship 39, 45; subscription 31, 32, 47; compensation 33-35; plus unit suites | - |
-| NFR-018 | 50 users; 95 % of core requests within 2 s | `tests/load.js` (2,000 requests, p95 about 200 ms, in process), `k6/load.js` (50 users, 15 min, p95 < 2 s) | The k6 15-minute run and monthly availability have **not been measured** |
+| NFR-018 | 50 users; 95 % of core requests within 2 s | `tests/load.js` (2,000 requests, p95 about 200 ms, in process), `k6/load.js` (50 users, 15 min, p95 < 2 s) | The k6 1-minute run in CI (commit `c6654e9`, 50 users, 12,172 requests, 0 % failed, p95 10.41 ms) met the target. The 15-minute run and monthly availability have **not been measured** |
 
 <!-- REQ-MATRIX:START -->
 ## 3b. Functional requirement to test matrix (generated)
@@ -251,17 +251,19 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | Playwright + axe-core (browser tests) | **Run**: pass; axe finds no serious or critical violation on 24 routes at 3 widths |
 | Node load smoke test | **Run**: 50 users, 2,000 requests, p95 about 200 ms, 0 server errors (in process, not over the network) |
 | ESLint | **Run**: 0 errors |
-| Cypress specs | Written; **not run** (the Cypress binary could not be downloaded in the sandbox). The same scenarios are covered by Playwright. |
-| k6 15-minute test | Written; the 1-minute version runs in CI on every push (result to be read from the run); the 15-minute run is manual and **not run yet** |
-| OWASP ZAP baseline | Run on GitHub Actions (0 FAIL, 7 WARN, 63 PASS); fixes for the warnings are in the code and wait for a new run |
+| Cypress specs | **Run in GitHub Actions**: passed on both runs of commit `c6654e9` |
+| k6 test | **Run in GitHub Actions** with 50 virtual users for 1 minute (commit `c6654e9`): 12,172 requests, 0 % failed, p95 10.41 ms, average 4.21 ms, 12,168 of 12,168 checks passed. The 15-minute run is manual and **not run yet** |
+| OWASP ZAP baseline | **Run in GitHub Actions**. Earlier run: 0 FAIL, 0 WARN, 67 PASS, 4 ignored. Latest run (commit `c6654e9`): 0 FAIL, 1 WARN (Base64 Disclosure on the bundled font stylesheet, a false positive), 66 PASS, 4 ignored. Rule 10094 is now ignored with a reason; **a new run is pending** |
 | Docker image and Compose | Written; **not run** (no Docker in the sandbox); the CI service container uses the same PostgreSQL 16 image |
-| GitHub Actions workflow | Run on 14 Nov 2026 (three rounds of pushes). Passed in the latest run: the main job (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress, and the OWASP ZAP baseline (**0 FAIL, 0 WARN, 67 PASS, 4 ignored with a reason**; the first run had 7 WARN, of which four were fixed in the code and three notes are ignored in `.zap/rules.tsv`). The k6 job passed, but that run used **1 virtual user, not 50**: k6 reads the variable `K6_DURATION` itself and replaced the scenario. The variable is now `LOAD_DURATION`; the 50-user, 1-minute result is pending. Firefox and WebKit failed in some runs on timing (a console message printed as an object, the sidebar slide, a smooth scroll, a slow axe run); the fixes are in `e2e.test.js` (key routes only for axe, instant scroll, animation off for the sidebar test, one retry in Firefox and WebKit, the first failure still printed) and are **not yet confirmed by a new run** |
+| Firefox and WebKit browser tests | **Run in GitHub Actions** (the same 24 tests as Chromium; key routes only for axe; one retry). Latest run (commit `c6654e9`): Firefox passed on both runs; WebKit passed on the pull-request run and failed on the push run (TC-E2E-10 waited only 8 s for a page heading). The wait is now 20 s with one reload; **a new run is pending** |
+| Team contribution tests | 24 tests (`tests/contrib`), run by `npm run contrib` and by a CI step; **all skipped** until each member writes their piece (`docs/CONTRIBUTING_STEPS.md`) |
+| GitHub Actions workflow | Run on 14 Nov 2026 (four rounds of pushes; every run link is in `docs/EVIDENCE.md`). Latest completed run (commit `c6654e9`): main job (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress, Firefox and k6 with 50 users passed; WebKit (push run) and ZAP failed for the two reasons above, and both fixes are in the next commit. The first k6 run used 1 virtual user because k6 reads `K6_DURATION` itself; the variable is now `LOAD_DURATION` |
 
 ## 5. Results (last run: see timestamps inside the evidence files)
 
-- **224 tests, 224 passed, 0 failed, 0 skipped** (`docs/evidence/TEST_REPORT.txt`), 20 suites.
+- **224 tests, 224 passed, 0 failed, 0 skipped** (`docs/evidence/TEST_REPORT.txt`), 20 suites. The 24 contribution tests (`npm run contrib`) and the three files they test (`shared/contrib`) are counted apart: they are left out of this total and of the coverage figure until each member writes their piece (`docs/CONTRIBUTING_STEPS.md`, step 8).
 - **Mutation testing** (`docs/evidence/mutation/index.html`): Stryker changed the shared rules in 766 small ways; the tests caught 92.1 %. The first run caught only 48 %, which showed the early tests were weaker than their coverage figure suggested.
-- **Coverage of source files** (`docs/evidence/COVERAGE_REPORT.txt`, test files excluded, server and shared code): **97.88 % lines, 82.63 % branches, 93.56 % functions, 93.76 % statements** (an earlier run of the same code gave 97.80 % lines and 93.39 % functions; a few timing-dependent lines in the rate limiter and backup code are not hit on every run). Lowest line coverage: `backup.js` 90 %, `mailer.js` 88 % (provider error paths), `assistant.js` 94 %. The React client is exercised by the browser tests but is not part of the coverage figure.
+- **Coverage of source files** (`docs/evidence/COVERAGE_REPORT.txt`, test files excluded, server and shared code): **97.80 % lines, 82.63 % branches, 93.39 % functions, 93.71 % statements** (an earlier run of the same code gave 97.88 % lines and 93.56 % functions; a few timing-dependent lines in the rate limiter and backup code are not hit on every run). Lowest line coverage: `backup.js` 90 %, `mailer.js` 88 % (provider error paths), `assistant.js` 94 %. The React client is exercised by the browser tests but is not part of the coverage figure.
 - **Accessibility** (TC-E2E-10): axe-core with the WCAG 2.0/2.1 A and AA rule sets, 24 routes (9 public, 13 signed-in student, 2 administrator) at 360, 768 and 1280 px: no serious or critical violation after fixing the issues the first run found (avatar contrast, a mismatched accessible name, missing link underlines, a progressbar without a name, an unlabelled field, nested interactive controls, scrollable regions without keyboard access).
 - **Load** (50 users x 40 requests, 70 % reads / 30 % writes, real PostgreSQL, in-process HTTP stack): 2,000 requests, p50 about 110 ms, p95 about 200 ms, max about 360 ms (two runs gave 108, 195, 350 and 119, 216, 372 ms), 0 server errors; NFR-018 asks for p95 < 2 s. The 15-minute k6 run was not executed.
 - **Backup/restore** (NFR-008): `TC-D10` takes a `pg_dump`, checks the SHA-256, restores into a scratch database, compares per-table row counts with the manifest and detects a tampered dump.
@@ -272,6 +274,9 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | ID | Test | File |
 |---|---|---|
 | TC-V01 | task title: 3-20 characters | `tests/validators.test.js` |
+| TC-CA-01..08 | team piece A `normaliseTags`: trim and lower case, comma string, duplicates, empty, 30-character limit, 8-tag limit, bad input, input not changed (skipped until written) | `tests/contrib/tags.test.js` |
+| TC-CB-01..08 | team piece B `matchScore`: identical, disjoint, partial, case, empty lists, repeats, rounding, bad input (skipped until written) | `tests/contrib/match.test.js` |
+| TC-CC-01..08 | team piece C `relativeTime`: just now, minutes, hours, yesterday, days, date after 30 days, input types, invalid date (skipped until written) | `tests/contrib/relativeTime.test.js` |
 | TC-V02 | task description: max 250 characters | `tests/validators.test.js` |
 | TC-V03 | tags: at most 3, no duplicates, valid characters | `tests/validators.test.js` |
 | TC-V04 | file: exactly 10 MiB accepted, 10.1 MB rejected with 413 | `tests/validators.test.js` |
@@ -438,4 +443,4 @@ Run `npm start`, open http://localhost:3000, sign in with the buttons on the log
 
 ## 7. Not covered by automated tests
 
-Cross-browser behaviour (Chromium only), screen-reader use, the offline/session-expiry/edit-conflict screens (manual M7-M10), the 15-minute k6 soak, the OWASP ZAP scan, the Cypress run, real payment-provider behaviour, TLS to the database, and multi-process concurrency (one server process was tested). Listed so that the report can state coverage honestly.
+Real Safari and real phones (Firefox and WebKit run only in GitHub Actions), screen-reader use, the offline/session-expiry/edit-conflict screens (manual M7-M10), the 15-minute k6 soak, real payment-provider behaviour, TLS to the database, and multi-process concurrency (one server process was tested). Listed so that the report can state coverage honestly.
