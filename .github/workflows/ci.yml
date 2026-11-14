@@ -47,6 +47,8 @@ jobs:
         run: npm run test:smoke
       - name: Unit tests (validators, rules, auth) - no database
         run: npm run test:unit
+      - name: Team contribution tests (stay skipped until a member turns theirs on; see docs/CONTRIBUTING_STEPS.md)
+        run: npm run contrib
       - name: Full suite with coverage gate (lines >= 90 %, functions >= 85 %)
         run: npm run coverage
       - name: Mutation testing (shared rules; fails below 60 %)
@@ -56,6 +58,21 @@ jobs:
       - name: Test and coverage report
         if: always()
         run: npm run report
+      - name: Evidence links for this run (shown on the run summary page)
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          WHO: ${{ github.actor }}
+        run: |
+          {
+            echo "## Evidence for this run"
+            echo "- Run: $RUN_URL"
+            echo "- Commit: $COMMIT_URL (pushed by $WHO)"
+            echo "- Jest totals: $(grep -m1 '^Tests:' docs/evidence/TEST_REPORT.txt || echo 'report missing')"
+            echo "- Contribution tests: $(npm run contrib --silent 2>&1 | grep -m1 '^Tests:' || echo 'not run')"
+            echo "- Full test list and coverage are in the test-evidence artifact on this page."
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: test-evidence, path: docs/evidence/ }

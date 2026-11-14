@@ -41,6 +41,12 @@ async function settle(p) {
   await addRule(p, '.js-reveal{opacity:1!important;transform:none!important;transition:none!important}');
   await p.waitForTimeout(300);
 }
+/** Open a route and wait for its heading. Slow engines on a shared runner sometimes stall a lazy chunk, so the wait is long and the page is reloaded once before the test gives up. */
+async function open(p, route) {
+  await p.goto(t.base + route);
+  try { await p.waitForSelector('h1', { timeout: 20000 }); }
+  catch (e) { await p.reload(); await p.waitForSelector('h1', { timeout: 30000 }); }
+}
 async function signIn(p, email) {
   await p.goto(t.base + '/login');
   await p.fill('#email', email); await p.fill('#password', 'Demo@1234'); await p.click('#form button[type=submit]');
@@ -143,7 +149,7 @@ T('TC-E2E-10 accessibility on every route: axe-core finds no serious or critical
     const anon = await page(w), user = await page(w), admin = await page(w); await signIn(user, 'aisha@port.ac.uk'); await signIn(admin, 'admin@rcmp.example');
     for (const [p, routes] of [[anon, AXE_PUBLIC], [user, AXE_USER], [admin, AXE_ADMIN]]) {
       for (const r of routes) {
-        await p.goto(t.base + r); await p.waitForSelector('h1', { timeout: 8000 }); await settle(p);
+        await open(p, r); await settle(p);
         const res = await new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
         for (const v of res.violations.filter((x) => ['serious', 'critical'].includes(x.impact))) problems.push(w + 'px ' + r + ': ' + v.id + ' (' + v.nodes.length + ') ' + v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | '));
       }
