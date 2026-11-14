@@ -1,7 +1,7 @@
 # Contributing (Team 02)
 
 ## Branching
-- `main` is always releasable; it is protected: changes arrive only through a pull request that passes CI and has one review.
+- `main` is always releasable: changes arrive only through a pull request that passes CI and has one review. Enforce it with branch protection (GitHub, Settings, Branches, Add rule for `main`).
 - Branch names: `feature/<issue-no>-<short-name>`, `fix/<issue-no>-<short-name>`, `docs/<topic>`.
 - Small, focused commits; message format `area: what changed (#issue)`, e.g. `agreements: reject stale base version (#14)`.
 

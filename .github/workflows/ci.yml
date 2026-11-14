@@ -26,6 +26,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - name: PostgreSQL 16 client tools (pg_dump and pg_restore must match the 16 service container)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-16
+          echo "PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm --prefix client ci
       - name: Install Chromium for the browser tests
@@ -57,6 +64,7 @@ jobs:
     name: Browser tests in Firefox and WebKit
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix: { browser: [firefox, webkit] }
     services:
       postgres:

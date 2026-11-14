@@ -97,7 +97,7 @@ This repository contains a working three-tier system, not a mock-up: a React sin
 | Subscriptions | Four plans (Explorer free, Scholar Basic, Plus and Pro) with monthly request allowances, upgrade or cancel (sandbox payment) | FR-045 to 047 |
 | Compensation | Statements and payouts for researchers (sandbox) | FR-052 to 056 |
 | Landing page | Interactive 3-D effects: tilting cards, a drag-and-rotate three-layer stack, a network globe; all switch off for users who prefer reduced motion | NFR-012 |
-| Website extras | Dark theme with a toggle (remembered in the browser), reading-progress bar, back-to-top button, print stylesheet, per-page titles and meta descriptions, Terms and Cookies pages, consent notice and mailto link on the contact form | extra |
+| Website extras | Dark theme with a toggle (remembered in the browser), reading-progress bar, back-to-top button, print stylesheet, per-page titles and meta descriptions, Terms and Cookies pages, consent notice and mailto link on the contact form, UX polish (44 px touch targets on phones, focus never hidden under the sticky bar, balanced headings, dark-mode loading blocks, high-contrast mode) | extra |
 | **Scout** help assistant | In-product guide that answers questions about using RCMP and politely declines anything else | extra |
 
 **Scout** is a retrieval assistant over a curated knowledge base. It is deliberately *not* a large language model: it cannot invent plan limits, sends no user text to a third party and is fully testable. Off-topic questions get a clear "I only help with this platform" reply.
@@ -290,7 +290,7 @@ Tests run against the **real HTTP server and a real PostgreSQL database**, each 
 
 ## 12. Development workflow
 
-- `main` is always releasable and protected; changes arrive by pull request with passing CI and one review.
+- `main` is always releasable; changes arrive by pull request with passing CI and one review. Turn on branch protection for `main` in GitHub (Settings, Branches) so the rule is enforced, not just written.
 - Branches: `feature/<issue>-<name>`, `fix/<issue>-<name>`, `docs/<topic>`. Commit format: `area: what changed (#issue)`.
 - Write the test case first (the plan is in `docs/TEST_PLAN.md`), then the code.
 - GitHub Actions runs lint, the Vite build, the dependency audit, the smoke, unit, property, security, contract and API tests, the browser tests in Chromium, Firefox and WebKit, the coverage gate, mutation testing, the load smoke test, Cypress and the ZAP baseline, and uploads the evidence files.
@@ -318,7 +318,7 @@ Stated plainly so nobody is surprised:
 - The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
 - Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
 - TLS is provided by the host or reverse proxy, not by the Node process.
-- Cypress, k6, ZAP, Docker and GitHub Actions are written but were not executed in the build sandbox; see `docs/TEST_PLAN.md`.
+- Cypress, k6, ZAP and Docker are written but were not executed in the build sandbox. GitHub Actions ran once on 14 November 2026: the main job passed lint and 222 of 224 tests; the failures it found (PostgreSQL 16 client tools for the backup test, one slow-runner click, and Firefox-only test details) are fixed in `.github/workflows/ci.yml` and `tests/e2e/e2e.test.js`, and a new run is pending. See `docs/TEST_PLAN.md`.
 - No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
 ## 15. Team

@@ -710,3 +710,22 @@ label a, .check a, .checkbox a { text-decoration: underline; text-underline-offs
   .shell.side-hidden ~ .side-edge { display: grid; }
   body:has(.shell.side-hidden) .demo-fab, body:has(.shell.side-hidden) .demo-panel { left: 16px; }
 }
+
+/* ---- UX polish (checked against the UI/UX guideline list: focus not obscured, touch targets, text wrapping, dark skeletons, contrast preference) ---- */
+html { scroll-padding-top: calc(var(--topbar-h) + 16px); }            /* a focused or linked item is never hidden under the sticky bar */
+h1, h2, h3 { text-wrap: balance; }                                      /* no one-word last lines in headings */
+p, li { text-wrap: pretty; }
+::selection { background: var(--primary-tint-2); color: var(--navy); }
+.icon-btn .dot { border-color: var(--surface); }
+@media (pointer: coarse) {                                              /* fingers need 44 x 44 px targets */
+  .icon-btn, .menu-btn, .theme-toggle, .side-edge { min-width: 44px; min-height: 44px; }
+  .btn { min-height: 44px; }
+  .sidebar a { min-height: 44px; }
+}
+:root[data-theme="dark"] .skeleton { background: linear-gradient(90deg, var(--subtle), #1f2c47, var(--subtle)); background-size: 200% 100%; }
+@media (prefers-contrast: more) {
+  :root { --border: #64748b; --border-strong: #475569; }
+  :root[data-theme="dark"] { --border: #94a3b8; --border-strong: #cbd5e1; }
+  .btn, .input, .card { border-width: 2px; }
+}
+@media (forced-colors: active) { .btn, .input, .card, .badge { border: 1px solid CanvasText; } }

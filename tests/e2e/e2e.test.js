@@ -17,10 +17,18 @@ afterAll(async () => { if (browser) await browser.close(); if (t) await t.close(
 
 async function page(width) {
   const ctx = await browser.newContext({ viewport: { width: width || 1280, height: 800 } }), p = await ctx.newPage(), errors = [];
-  p.on('pageerror', (e) => errors.push(String(e)));
-  p.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|fonts\.g/.test(m.text())) errors.push(m.text()); });
+  // Firefox reports a cancelled lazy chunk ("error loading dynamically imported module") when the test navigates away on purpose; that is not an app error.
+  const noise = /Failed to load resource|fonts\.g|error loading dynamically imported module|Importing a module script failed/;
+  p.on('pageerror', (e) => { if (!noise.test(String(e))) errors.push(String(e)); });
+  p.on('console', (m) => { if (m.type() === 'error' && !noise.test(m.text())) errors.push(m.text()); });
   await p.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
   p.errors = errors; return p;
+}
+/** Wait for the page to be quiet ("networkidle" can time out in Firefox on pages that keep animating) and show the scroll-reveal sections so axe checks them. */
+async function settle(p) {
+  await p.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+  await p.addStyleTag({ content: '.js-reveal{opacity:1!important;transform:none!important;transition:none!important}' }).catch(() => {});
+  await p.waitForTimeout(300);
 }
 async function signIn(p, email) {
   await p.goto(t.base + '/login');
@@ -93,7 +101,10 @@ T('TC-E2E-08 keyboard: Tab reaches the skip link / first control and focus is vi
 T('TC-E2E-09 forgot and reset password in the browser, then sign in with the new password (FR-002)', async () => {
   const email = 'browser.reset@port.ac.uk'; await t.call('POST', '/api/auth/register', { name: 'Browser Reset', email, password: 'Str0ng#Pass1', role: 'student', consent: true });
   const p = await page(); await p.goto(t.base + '/login'); await p.click('a[href="/forgot"]'); await p.waitForURL(/forgot/, { waitUntil: 'commit' }); await p.waitForSelector('text=Forgot your password?');
-  await p.fill('#email', email); await p.click('#form button[type=submit]');
+  for (let i = 0; i < 3 && !(await p.locator('text=Open reset link').count()); i++) { // a slow runner can swallow the first click while the page is still loading
+    await p.fill('#email', email); await p.click('#form button[type=submit]');
+    await p.waitForSelector('text=Open reset link', { timeout: 8000 }).catch(() => {});
+  }
   await p.click('text=Open reset link'); await p.waitForURL(/reset\?token=/, { waitUntil: 'commit' });
   await p.fill('#password', 'weak'); await p.fill('#confirm', 'weak'); await p.click('#form button[type=submit]');
   assert.match(p.url(), /reset/, 'weak password refused');
@@ -114,7 +125,7 @@ T('TC-E2E-10 accessibility on every route: axe-core finds no serious or critical
     const anon = await page(w), user = await page(w), admin = await page(w); await signIn(user, 'aisha@port.ac.uk'); await signIn(admin, 'admin@rcmp.example');
     for (const [p, routes] of [[anon, PUBLIC_ROUTES], [user, USER_ROUTES], [admin, ADMIN_ROUTES]]) {
       for (const r of routes) {
-        await p.goto(t.base + r); await p.waitForSelector('h1', { timeout: 8000 }); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1000);
+        await p.goto(t.base + r); await p.waitForSelector('h1', { timeout: 8000 }); await settle(p);
         const res = await new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
         for (const v of res.violations.filter((x) => ['serious', 'critical'].includes(x.impact))) problems.push(w + 'px ' + r + ': ' + v.id + ' (' + v.nodes.length + ') ' + v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | '));
       }
@@ -274,7 +285,7 @@ T('TC-E2E-21 dark theme: the toggle switches, the choice survives a reload, and 
   await p.reload(); await p.waitForSelector('h1'); assert.equal(await p.getAttribute('html', 'data-theme'), 'dark');
   const problems = [];
   for (const r of PUBLIC_ROUTES) {
-    await p.goto(t.base + r); await p.waitForSelector('h1'); await p.waitForLoadState('networkidle'); await p.waitForTimeout(500);
+    await p.goto(t.base + r); await p.waitForSelector('h1'); await settle(p);
     const res = await new AxeBuilder({ page: p }).withRules(['color-contrast']).analyze();
     for (const v of res.violations) problems.push(r + ': ' + v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | '));
   }

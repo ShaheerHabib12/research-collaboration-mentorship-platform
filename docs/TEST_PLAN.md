@@ -255,7 +255,7 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | k6 15-minute test | Written; **not run** (k6 not installable in the sandbox) |
 | OWASP ZAP baseline | CI job written; **not run** |
 | Docker image and Compose | Written; **not run** (no Docker in the sandbox); the CI service container uses the same PostgreSQL 16 image |
-| GitHub Actions workflow | Written; **not run** until pushed |
+| GitHub Actions workflow | Run once on 14 Nov 2026: lint passed and 222 of 224 tests passed in the main job. It found three real problems in the setup (backup test needs PostgreSQL 16 client tools; one browser click on a slow runner; four Firefox-only test details), all fixed in `ci.yml` and `e2e.test.js`. **New run pending** |
 
 ## 5. Results (last run: see timestamps inside the evidence files)
 
