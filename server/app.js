@@ -137,10 +137,10 @@ function createApp(o) {
 
   /* ---- security headers (NFR-004) ---- */
   app.use(helmet({
-    contentSecurityPolicy: { useDefaults: false, directives: { defaultSrc: ["'self'"], scriptSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'], fontSrc: ["'self'", 'https://fonts.gstatic.com'], imgSrc: ["'self'", 'data:'], connectSrc: ["'self'"], objectSrc: ["'none'"], baseUri: ["'self'"], formAction: ["'self'"], frameAncestors: ["'none'"] } },
+    contentSecurityPolicy: { useDefaults: false, directives: { defaultSrc: ["'self'"], scriptSrc: ["'self'"], styleSrc: ["'self'"], fontSrc: ["'self'"], imgSrc: ["'self'", 'data:'], connectSrc: ["'self'"], objectSrc: ["'none'"], baseUri: ["'self'"], formAction: ["'self'"], frameAncestors: ["'none'"] } },
     referrerPolicy: { policy: 'same-origin' }, frameguard: { action: 'deny' },
     hsts: o.forceHttps ? { maxAge: 15552000, includeSubDomains: true } : false,
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: { policy: 'require-corp' }   // nothing is loaded from another origin, so the strict policy is safe
   }));
   /* Browser features the application never uses are switched off (reported by the OWASP ZAP baseline scan). */
   app.use((req, res, next) => { res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'); next(); });

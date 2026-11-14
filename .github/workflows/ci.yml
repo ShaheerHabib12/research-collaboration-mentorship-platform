@@ -156,8 +156,7 @@ jobs:
         with: { name: zap-report, path: report_html.html, if-no-files-found: ignore }
 
   k6:
-    name: "k6 load test (manual, 50 users, 15 minutes)"
-    if: github.event_name == 'workflow_dispatch'
+    name: "k6 load test (50 users; 1 minute on a push, 15 minutes when started by hand)"
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -180,4 +179,5 @@ jobs:
           for i in $(seq 1 90); do curl -sf http://127.0.0.1:3000/api/health >/dev/null && break; sleep 1; done
           curl -sf http://127.0.0.1:3000/api/health
       - uses: grafana/setup-k6-action@v1
-      - run: k6 run -e BASE_URL=http://localhost:3000 k6/load.js
+      - name: k6 (50 users; 15 minutes only when the workflow is started by hand)
+        run: k6 run -e BASE_URL=http://localhost:3000 -e K6_DURATION=${{ github.event_name == 'workflow_dispatch' && '15m' || '1m' }} k6/load.js

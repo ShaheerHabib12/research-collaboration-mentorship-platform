@@ -51,7 +51,7 @@ Method: review of every page against the report's use cases and the brief's "wel
 - No automated browser tests in the repository → add Playwright specs from the manual checklist.
 - Not audited with an automated accessibility tool (axe) → run it and fix findings.
 - Page scripts are inline and dense → move to per-page modules with JSDoc for the "code documentation" criterion.
-- Google Fonts are loaded from the internet (falls back to system fonts offline).
+- Fonts are the system fonts (no outside font service is called, so nothing leaves the page and the CSP allows only this origin).
 - React/Vite from the design was not used (see `ARCHITECTURE.md`).
 
 

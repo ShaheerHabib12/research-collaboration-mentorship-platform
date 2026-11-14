@@ -20,14 +20,22 @@ async function page(width) {
   // Firefox and WebKit report a request or lazy chunk that is cancelled when the test navigates away on purpose; the app is served from one origin, so this is not a CORS or app error.
   const noise = /Failed to load resource|fonts\.g|error loading dynamically imported module|Importing a module script failed|Fetch API cannot load .* due to access control checks|NetworkError when attempting to fetch resource|Load failed/;
   p.on('pageerror', (e) => { if (!noise.test(String(e))) errors.push(String(e)); });
-  p.on('console', (m) => { if (m.type() === 'error' && !noise.test(m.text())) errors.push(m.text()); });
+  p.on('console', async (m) => {
+    if (m.type() !== 'error') return;
+    let text = m.text();
+    // Firefox prints an object argument as "JSHandle@object"; read the real message so it can be judged (and shown if it fails the test).
+    if (/JSHandle/.test(text)) { try { text = (await Promise.all(m.args().map((a) => a.evaluate((v) => (v && v.message) || (typeof v === 'string' ? v : JSON.stringify(v)))))).join(' '); } catch (e) { /* page already closed */ } }
+    if (!noise.test(text)) errors.push(text);
+  });
   await p.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
   p.errors = errors; return p;
 }
+/** Add a CSS rule through the stylesheet object. A <style> tag would be blocked by the page's strict Content-Security-Policy (no 'unsafe-inline'), which is the behaviour under test. */
+const addRule = (p, rule) => p.evaluate((r) => { const sheet = document.styleSheets[0]; if (sheet) sheet.insertRule(r, sheet.cssRules.length); }, rule).catch(() => {});
 /** Wait for the page to be quiet ("networkidle" can time out in Firefox on pages that keep animating) and show the scroll-reveal sections so axe checks them. */
 async function settle(p) {
   await p.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
-  await p.addStyleTag({ content: '.js-reveal{opacity:1!important;transform:none!important;transition:none!important}' }).catch(() => {});
+  await addRule(p, '.js-reveal{opacity:1!important;transform:none!important;transition:none!important}');
   await p.waitForTimeout(300);
 }
 async function signIn(p, email) {
@@ -121,12 +129,16 @@ const WIDTHS = SLOW_ENGINE ? [1280] : [360, 768, 1280];
 const PUBLIC_ROUTES = ['/', '/pricing', '/contact', '/privacy', '/terms', '/cookies', '/login', '/register', '/forgot'];
 const USER_ROUTES = ['/dashboard', '/profile', '/notifications', '/requests', '/discover', '/mentors', '/projects', '/project-new', '/support', '/subscription', '/project?id=PRJ-1001', '/workspace?id=PRJ-1001', '/agreement?id=PRJ-1001'];
 const ADMIN_ROUTES = ['/admin', '/compensation'];
+// Firefox and WebKit run the same axe rules on ten key routes at 1280 px (Chromium covers every route at all three widths); WebKit needs about 11 s per route on a CI runner.
+const AXE_PUBLIC = SLOW_ENGINE ? ['/', '/pricing', '/contact', '/login'] : PUBLIC_ROUTES;
+const AXE_USER = SLOW_ENGINE ? ['/dashboard', '/discover', '/workspace?id=PRJ-1001', '/subscription', '/profile'] : USER_ROUTES;
+const AXE_ADMIN = SLOW_ENGINE ? ['/admin'] : ADMIN_ROUTES;
 T('TC-E2E-10 accessibility on every route: axe-core finds no serious or critical violations at 360, 768 and 1280 px (NFR-013)', async () => {
   const AxeBuilder = require('@axe-core/playwright').default || require('@axe-core/playwright').AxeBuilder;
   const problems = [];
   for (const w of WIDTHS) {
     const anon = await page(w), user = await page(w), admin = await page(w); await signIn(user, 'aisha@port.ac.uk'); await signIn(admin, 'admin@rcmp.example');
-    for (const [p, routes] of [[anon, PUBLIC_ROUTES], [user, USER_ROUTES], [admin, ADMIN_ROUTES]]) {
+    for (const [p, routes] of [[anon, AXE_PUBLIC], [user, AXE_USER], [admin, AXE_ADMIN]]) {
       for (const r of routes) {
         await p.goto(t.base + r); await p.waitForSelector('h1', { timeout: 8000 }); await settle(p);
         const res = await new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
@@ -305,13 +317,15 @@ T('TC-E2E-22 scroll helpers: the progress bar grows while scrolling and the back
 }, TO);
 T('TC-E2E-23 sidebar: the menu button hides it on a wide screen, a tab at the edge brings it back, and the choice survives a reload', async () => {
   const p = await page(1280); await signIn(p, 'aisha@port.ac.uk'); await p.waitForSelector('#sidebar');
+  const still = '.sidebar,.main,.footer{transition:none!important}';   // test the final position, not the 0.2 s slide (headless WebKit and Firefox can pause animations)
+  await addRule(p, still);
   const left = () => p.evaluate(() => Math.round(document.getElementById('sidebar').getBoundingClientRect().right));
   assert.ok((await left()) > 100, 'sidebar visible at first');
-  await p.click('#menuBtn'); await p.waitForSelector('.shell.side-hidden', { timeout: 10000 }); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right <= 1, null, { timeout: 10000 });
+  await p.click('#menuBtn'); await p.waitForSelector('.shell.side-hidden', { timeout: 10000 }); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right <= 1, null, { timeout: 10000, polling: 100 });
   assert.ok(await p.isVisible('.side-edge'));
   assert.equal(await p.evaluate(() => Math.round(document.querySelector('.main').getBoundingClientRect().left)), 0, 'content uses the full width');
-  await p.reload(); await p.waitForSelector('.side-edge'); assert.ok((await left()) <= 0, 'still hidden after reload');
-  await p.click('.side-edge'); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right > 100, null, { timeout: 5000 });
+  await p.reload(); await p.waitForSelector('.side-edge'); await addRule(p, still); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right <= 1, null, { timeout: 10000, polling: 100 }); assert.ok((await left()) <= 0, 'still hidden after reload');
+  await p.click('.side-edge'); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right > 100, null, { timeout: 10000, polling: 100 });
   assert.equal(await p.isVisible('.side-edge'), false);
   assert.deepEqual(p.errors, []);
 }, TO);

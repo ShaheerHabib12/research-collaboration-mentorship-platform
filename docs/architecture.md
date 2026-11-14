@@ -98,7 +98,7 @@ Each row also holds the full entity as JSONB in `data`, next to the constrained 
 1. **Writers are serialised by one advisory lock and every request loads whole collections.** Fine for the target of 50 concurrent users (`npm run load`, `k6/load.js`); beyond a few hundred users the Unit of Work must be replaced by indexed per-entity queries.
 2. **JWT in `localStorage`.** An XSS bug would expose it; mitigated by escaping and a strict CSP, not eliminated. An `HttpOnly` cookie with CSRF protection is the stronger design.
 3. **No logout revocation or refresh tokens.** Tokens expire after 8 h; changing the password revokes all of them.
-4. **CSP allows inline styles** (`style-src 'unsafe-inline'`) because React sets style attributes; scripts are strict.
+4. **The CSP is strict for scripts and styles** (`'self'` only, no `'unsafe-inline'`, no other origins). React sets styles through the browser's style object, which the policy allows. `Cross-Origin-Embedder-Policy: require-corp` is sent because nothing is loaded from another origin.
 5. **Throttles are in memory**, per process; use a shared store for several instances.
 6. **No malware scanning** of uploads; type and size are validated only.
 7. **Payments and payouts are sandbox simulations**; no real provider is called.

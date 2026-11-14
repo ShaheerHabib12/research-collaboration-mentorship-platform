@@ -1,10 +1,11 @@
-// k6 load test (NFR-018): 50 virtual users for 15 minutes, p95 under 2 s, under 1 % errors.
-// Run against a running server with demo data:  k6 run -e BASE_URL=http://localhost:3000 k6/load.js
+// k6 load test (NFR-018): 50 virtual users, p95 under 2 s, under 1 % errors.
+// Full run (15 minutes, the NFR-018 test):  k6 run -e BASE_URL=http://localhost:3000 k6/load.js
+// Short run (what GitHub Actions does on every push, 1 minute):  add  -e K6_DURATION=1m
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-  scenarios: { steady: { executor: 'constant-vus', vus: 50, duration: '15m' } },
+  scenarios: { steady: { executor: 'constant-vus', vus: 50, duration: __ENV.K6_DURATION || '15m' } },
   thresholds: { http_req_duration: ['p(95)<2000'], http_req_failed: ['rate<0.01'] }
 };
 const BASE = __ENV.BASE_URL || 'http://localhost:3000';
