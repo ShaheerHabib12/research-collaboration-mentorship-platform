@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="RCMP logo">
+  <defs>
+    <linearGradient id="rcmpG" x1="4" y1="2" x2="60" y2="62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563eb"/><stop offset=".55" stop-color="#1d4ed8"/><stop offset="1" stop-color="#0d9488"/>
+    </linearGradient>
+    <linearGradient id="rcmpH" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#rcmpG)"/>
+  <rect width="64" height="64" rx="16" fill="url(#rcmpH)"/>
+  <!-- R built as a network: stem, bowl, leg, joined by nodes -->
+  <path d="M22 47V18h11.5a8.5 8.5 0 0 1 0 17H22" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M33.5 35 44 47" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="22" cy="18" r="4.2" fill="#fff"/><circle cx="22" cy="18" r="1.8" fill="#1d4ed8"/>
+  <circle cx="44.5" cy="47.5" r="5" fill="#fbbf24"/>
+  <circle cx="42" cy="26.5" r="3.4" fill="#5eead4"/>
+</svg>

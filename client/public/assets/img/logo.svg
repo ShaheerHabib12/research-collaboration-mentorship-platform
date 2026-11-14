@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" role="img" aria-label="RCMP Research and Mentorship">
+  <image href="logo-mark.svg" width="64" height="64"/>
+  <text x="78" y="34" font-family="Inter,Segoe UI,Arial,sans-serif" font-weight="800" font-size="30" letter-spacing="-1" fill="#0f172a">RCMP</text>
+  <text x="79" y="52" font-family="Consolas,Menlo,monospace" font-weight="600" font-size="10" letter-spacing="1.6" fill="#64748b">RESEARCH &amp; MENTORSHIP</text>
+</svg>

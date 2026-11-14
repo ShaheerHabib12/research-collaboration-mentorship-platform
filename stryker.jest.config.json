@@ -1,0 +1,1 @@
+{ "testEnvironment": "node", "testMatch": ["<rootDir>/tests/validators.test.js", "<rootDir>/tests/rules.test.js", "<rootDir>/tests/property.test.js", "<rootDir>/tests/validators2.test.js", "<rootDir>/tests/rules2.test.js"] }

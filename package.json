@@ -1,0 +1,94 @@
+{
+  "name": "rcmp",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Research Collaboration and Mentorship Platform - Team 02, M35376. React + Vite client, Node.js + Express API, PostgreSQL.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "start:env": "node --env-file=.env server/index.js",
+    "admin:password": "node scripts/set-admin-password.js",
+    "dev": "concurrently -k \"node --watch server/index.js\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client run build",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand tests/validators tests/rules tests/auth",
+    "test:api": "jest --runInBand tests/api tests/db",
+    "coverage": "jest --runInBand --coverage",
+    "e2e": "jest --runInBand tests/e2e",
+    "cypress": "cypress run",
+    "load": "node tests/load.js 50 40",
+    "backup": "node server/backup.js backup",
+    "report": "node scripts/test-report.js",
+    "lint": "eslint server scripts tests client/src shared cypress k6",
+    "schema": "node scripts/export-schema.js",
+    "docs": "node scripts/requirements-register.js && node scripts/build-docs.js",
+    "k6": "k6 run -e BASE_URL=http://localhost:3000 k6/load.js",
+    "install:client": "npm --prefix client ci",
+    "test:smoke": "jest --runInBand tests/smoke",
+    "test:property": "jest tests/property",
+    "test:security": "jest --runInBand tests/security",
+    "test:contract": "jest --runInBand tests/contract",
+    "mutation": "stryker run",
+    "audit:deps": "npm audit --omit=dev && npm --prefix client audit",
+    "e2e:firefox": "BROWSER=firefox jest --runInBand tests/e2e",
+    "e2e:webkit": "BROWSER=webkit jest --runInBand tests/e2e"
+  },
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform.git"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
+    "@stryker-mutator/core": "^8.7.1",
+    "@stryker-mutator/jest-runner": "^8.7.1",
+    "axe-core": "^4.14.0",
+    "concurrently": "^10.0.7",
+    "cypress": "^14.5.4",
+    "cypress-axe": "^1.7.0",
+    "eslint": "^10.14.0",
+    "fast-check": "^3.23.2",
+    "globals": "^17.14.0",
+    "jest": "^30.5.2",
+    "supertest": "^7.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.js"
+    ],
+    "globalSetup": "<rootDir>/tests/globalSetup.js",
+    "globalTeardown": "<rootDir>/tests/globalTeardown.js",
+    "testTimeout": 60000,
+    "collectCoverageFrom": [
+      "server/**/*.js",
+      "shared/**/*.js",
+      "!server/index.js"
+    ],
+    "coverageDirectory": "docs/evidence/coverage",
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "json-summary",
+      "lcov"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "lines": 90,
+        "functions": 85
+      }
+    }
+  }
+}

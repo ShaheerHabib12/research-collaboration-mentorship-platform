@@ -1,57 +1,169 @@
-name: CI
-
+# Continuous integration (Coursework 1 test strategy): runs on every push and pull request.
+# Real PostgreSQL 16 service container - nothing is mocked. Node 24 LTS.
+name: ci
 on:
-  pull_request:
   push:
+    branches: [main, 'feature/**', 'fix/**']
+  pull_request:
     branches: [main]
-
+  workflow_dispatch:   # "Run workflow" button in the Actions tab
+env:
+  NODE_VERSION: 24
 jobs:
-  server:
+  test:
+    name: lint, build, audit, Jest (unit, property, security, contract, API), Playwright + axe, mutation, load
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
-    # PostgreSQL service so the schema tests run against a real database.
     services:
       postgres:
         image: postgres:16
-        env:
-          POSTGRES_USER: rcmp_user
-          POSTGRES_PASSWORD: change_me
-          POSTGRES_DB: rcmp
-        ports:
-          - 5432:5432
+        env: { POSTGRES_USER: rcmp, POSTGRES_PASSWORD: rcmp, POSTGRES_DB: postgres }
+        ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U rcmp_user -d rcmp"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
+          --health-cmd "pg_isready -U rcmp" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      DATABASE_URL: postgres://rcmp_user:change_me@localhost:5432/rcmp
+      TEST_DATABASE_URL: postgres://rcmp:rcmp@localhost:5432/postgres
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: server/package-lock.json
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
+      - run: npm --prefix client ci
+      - name: Install Chromium for the browser tests
+        run: npx playwright install --with-deps chromium
+      - name: Lint (ESLint)
+        run: npm run lint
+      - name: Build the React client (Vite)
+        run: npm run build
+      - name: Dependency audit (production dependencies, server and client)
+        run: npm run audit:deps
+      - name: Smoke tests first (is it alive?)
+        run: npm run test:smoke
+      - name: Unit tests (validators, rules, auth) - no database
+        run: npm run test:unit
+      - name: Full suite with coverage gate (lines >= 90 %, functions >= 85 %)
+        run: npm run coverage
+      - name: Mutation testing (shared rules; fails below 60 %)
+        run: npm run mutation
+      - name: Load smoke test (50 concurrent users, p95 < 2 s, no 5xx)
+        run: npm run load
+      - name: Test and coverage report
+        if: always()
+        run: npm run report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: test-evidence, path: docs/evidence/ }
 
-  client:
+  cross-browser:
+    name: Browser tests in Firefox and WebKit
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: client
+    strategy:
+      matrix: { browser: [firefox, webkit] }
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: rcmp, POSTGRES_PASSWORD: rcmp, POSTGRES_DB: postgres }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U rcmp" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://rcmp:rcmp@localhost:5432/postgres
+      BROWSER: ${{ matrix.browser }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: client/package-lock.json
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
+      - run: npm --prefix client ci
       - run: npm run build
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npx jest --runInBand tests/e2e
+
+  cypress:
+    name: Cypress end-to-end + axe-core
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: rcmp, POSTGRES_PASSWORD: rcmp, POSTGRES_DB: rcmp }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U rcmp" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://rcmp:rcmp@localhost:5432/rcmp
+      RCMP_BCRYPT_ROUNDS: '4'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm --prefix client ci
+      - run: npm run build
+      - uses: cypress-io/github-action@v6
+        with:
+          install: false
+          start: npm start
+          wait-on: 'http://localhost:3000/api/health'
+          wait-on-timeout: 90
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: cypress-screenshots, path: cypress/screenshots, if-no-files-found: ignore }
+
+  zap:
+    name: OWASP ZAP baseline scan
+    runs-on: ubuntu-latest
+    needs: test
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: rcmp, POSTGRES_PASSWORD: rcmp, POSTGRES_DB: rcmp }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U rcmp" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://rcmp:rcmp@localhost:5432/rcmp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm --prefix client ci
+      - run: npm run build
+      - name: Start the application
+        run: |
+          nohup npm start > server.log 2>&1 &
+          npx --yes wait-on http://localhost:3000/api/health --timeout 90000
+      - uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          fail_action: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: zap-report, path: report_html.html, if-no-files-found: ignore }
+
+  k6:
+    name: "k6 load test (manual, 50 users, 15 minutes)"
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: rcmp, POSTGRES_PASSWORD: rcmp, POSTGRES_DB: rcmp }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U rcmp" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://rcmp:rcmp@localhost:5432/rcmp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm --prefix client ci
+      - run: npm run build
+      - run: |
+          nohup npm start > server.log 2>&1 &
+          npx --yes wait-on http://localhost:3000/api/health --timeout 90000
+      - uses: grafana/setup-k6-action@v1
+      - run: k6 run -e BASE_URL=http://localhost:3000 k6/load.js

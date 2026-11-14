@@ -1,0 +1,85 @@
+/* Scout - in-product help assistant. Brand palette only (sapphire / navy / teal), no external assets. */
+.scout { --s-blue: #2563eb; --s-deep: #1e3a8a; --s-navy: #0f172a; --s-teal: #14b8a6; --s-amber: #f59e0b;
+  position: fixed; right: 20px; bottom: 20px; z-index: 80; font-family: var(--font-body, system-ui, sans-serif); }
+.scout *, .scout *::before, .scout *::after { box-sizing: border-box; }
+
+/* Launcher */
+.scout-launch { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #3b82f6, var(--s-deep) 78%); box-shadow: 0 10px 24px -6px rgba(30,58,138,.55), 0 2px 4px rgba(15,23,42,.2), inset 0 1px 0 rgba(255,255,255,.25);
+  transition: transform .2s ease, box-shadow .2s ease; -webkit-tap-highlight-color: transparent; }
+.scout-launch:focus-visible { outline: 3px solid var(--focus, #93c5fd); outline-offset: 3px; }
+.scout-launch:active { transform: scale(.94); }
+.scout-launch svg { width: 44px; height: 44px; display: block; overflow: visible; }
+.scout-body { transform-origin: 50% 90%; }
+.scout.idle .scout-launch svg { animation: scout-bob 4.2s ease-in-out infinite; }
+.scout-launch.shake svg { animation: scout-shake .22s ease-in-out 3; }   /* three quick vibrations on hover */
+.scout-eye { transition: transform .08s linear; }
+.scout-blink { animation: scout-blink 5s infinite; transform-origin: center; transform-box: fill-box; }
+.scout-ping { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--s-amber); border: 2px solid #fff; }
+.scout-ping[hidden] { display: none; }
+.scout.open .scout-launch svg { animation: none; }
+.scout-tip { position: absolute; right: 76px; bottom: 14px; white-space: nowrap; background: var(--s-navy); color: #fff; font-size: .8125rem; line-height: 1; padding: 9px 12px; border-radius: 8px;
+  opacity: 0; transform: translateX(6px); pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
+.scout-launch:hover + .scout-tip, .scout-launch:focus-visible + .scout-tip { opacity: 1; transform: none; }
+.scout.open .scout-tip { display: none; }
+
+/* Panel */
+.scout-panel { position: absolute; right: 0; bottom: 80px; width: 384px; max-width: calc(100vw - 32px); height: 560px; max-height: calc(100vh - 120px);
+  display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border, #e2e8f0); border-radius: 14px; overflow: hidden;
+  box-shadow: 0 24px 48px -12px rgba(15,23,42,.28), 0 4px 10px rgba(15,23,42,.08); transform-origin: 90% 100%; animation: scout-in .22s cubic-bezier(.2,.8,.2,1); }
+.scout-panel[hidden] { display: none; }
+.scout-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; color: #fff; background: linear-gradient(135deg, var(--s-navy), var(--s-deep)); }
+.scout-avatar { width: 38px; height: 38px; flex: none; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #3b82f6, #1e40af 80%); display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.scout-avatar svg { width: 28px; height: 28px; }
+.scout-title { flex: 1; min-width: 0; }
+.scout-title strong { display: block; font: 700 1rem/1.2 var(--font-display, inherit); letter-spacing: -.01em; }
+.scout-title span { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #bfdbfe; margin-top: 2px; }
+.scout-title span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--s-teal); }
+.scout-iconbtn { all: unset; box-sizing: border-box; cursor: pointer; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: #dbeafe; }
+.scout-iconbtn:hover { background: rgba(255,255,255,.12); color: #fff; }
+.scout-iconbtn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.scout-iconbtn svg { width: 18px; height: 18px; }
+
+.scout-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--bg, #f8fafc); scroll-behavior: smooth; overscroll-behavior: contain; }
+.scout-msg { display: flex; flex-direction: column; gap: 8px; max-width: 88%; animation: scout-rise .2s ease-out; }
+.scout-msg.me { align-self: flex-end; align-items: flex-end; }
+.scout-bubble { padding: 10px 13px; border-radius: 12px; font-size: .875rem; line-height: 1.5; white-space: pre-line; word-wrap: break-word; overflow-wrap: anywhere; }
+.scout-msg.bot .scout-bubble { background: #fff; color: var(--text, #0f172a); border: 1px solid var(--border, #e2e8f0); border-top-left-radius: 4px; }
+.scout-msg.me .scout-bubble { background: var(--s-blue); color: #fff; border-top-right-radius: 4px; }
+.scout-links, .scout-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.scout-link { display: inline-flex; align-items: center; gap: 4px; font-size: .8125rem; font-weight: 600; color: var(--primary-strong, #1d4ed8); background: var(--primary-tint, #eff6ff); border: 1px solid var(--primary-tint-2, #dbeafe); padding: 5px 10px; border-radius: 999px; text-decoration: none; }
+.scout-link:hover { background: var(--primary-tint-2, #dbeafe); }
+.scout-chip { all: unset; box-sizing: border-box; cursor: pointer; font-size: .8125rem; color: var(--text-2, #475569); background: #fff; border: 1px solid var(--border-strong, #cbd5e1); padding: 6px 11px; border-radius: 999px; transition: border-color .15s, color .15s, background .15s; }
+.scout-chip:hover { border-color: var(--s-blue); color: var(--primary-strong, #1d4ed8); background: var(--primary-tint, #eff6ff); }
+.scout-chip:focus-visible, .scout-link:focus-visible { outline: 2px solid var(--s-blue); outline-offset: 1px; }
+.scout-typing { display: inline-flex; gap: 4px; padding: 13px 14px; background: #fff; border: 1px solid var(--border, #e2e8f0); border-radius: 12px; border-top-left-radius: 4px; width: max-content; }
+.scout-typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3, #64748b); animation: scout-dot 1s infinite ease-in-out; }
+.scout-typing i:nth-child(2) { animation-delay: .15s; } .scout-typing i:nth-child(3) { animation-delay: .3s; }
+
+.scout-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border, #e2e8f0); background: #fff; }
+.scout-input { flex: 1; min-width: 0; font: inherit; font-size: .875rem; color: var(--text, #0f172a); border: 1px solid var(--border-strong, #cbd5e1); border-radius: 10px; padding: 10px 12px; background: #fff; }
+.scout-input::placeholder { color: var(--text-3, #64748b); }
+.scout-input:focus { outline: none; border-color: var(--s-blue); box-shadow: 0 0 0 3px var(--focus, #93c5fd); }
+.scout-send { all: unset; box-sizing: border-box; cursor: pointer; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 10px; background: var(--s-blue); color: #fff; transition: background .15s; }
+.scout-send:hover { background: var(--primary-strong, #1d4ed8); }
+.scout-send:focus-visible { outline: 3px solid var(--focus, #93c5fd); outline-offset: 2px; }
+.scout-send:disabled { background: var(--border-strong, #cbd5e1); cursor: not-allowed; }
+.scout-send svg { width: 18px; height: 18px; }
+.scout-note { padding: 0 14px 10px; background: #fff; font-size: .6875rem; line-height: 1.4; color: var(--text-3, #64748b); }
+
+@keyframes scout-shake { 0%,100% { transform: translateX(0) rotate(0); } 20% { transform: translateX(-3px) rotate(-7deg); } 50% { transform: translateX(3px) rotate(7deg); } 80% { transform: translateX(-2px) rotate(-4deg); } }
+@keyframes scout-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes scout-blink { 0%,94%,100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+@keyframes scout-in { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes scout-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes scout-dot { 0%,60%,100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+@media (max-width: 520px) {
+  .scout { right: 12px; bottom: 12px; }
+  .scout-panel { position: fixed; left: 8px; right: 8px; bottom: 88px; width: auto; max-width: none; height: min(560px, calc(100vh - 110px)); }
+  .scout-tip { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scout *, .scout *::before, .scout *::after { animation: none !important; transition: none !important; }
+  .scout-launch.shake svg { transform: scale(1.08); }
+}

@@ -1,350 +1,366 @@
 <div align="center">
 
+<p align="center"><img src="client/public/assets/img/logo-mark.svg" width="88" alt="RCMP logo"></p>
+
 # Research Collaboration and Mentorship Platform
 
 **Connect researchers. Build teams. Move ideas forward.**
 
-A web platform concept designed to help students and researchers discover collaborators, connect with mentors, organise research projects, and coordinate teamwork in one place.
-
+![University of Portsmouth](https://img.shields.io/badge/University-Portsmouth-1e3a8a)
+![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%C2%B7%20Vite-2563eb)
+![Backend](https://img.shields.io/badge/Backend-Node.js%2024%20%C2%B7%20Express%205-339933)
+![Database](https://img.shields.io/badge/Database-PostgreSQL%2016-336791)
+![Tests](https://img.shields.io/badge/Tests-224%20passing-0d9488)
+![Coverage](https://img.shields.io/badge/Coverage-97.8%25%20lines-0d9488)
+![Mutation score](https://img.shields.io/badge/Mutation%20score-92%25-0d9488)
+![Status](https://img.shields.io/badge/Status-Coursework%202-d97706)
 [![CI](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml)
-[![University of Portsmouth](https://img.shields.io/badge/University%20of-Portsmouth-005EB8)](https://www.port.ac.uk/)
-[![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB)](https://react.dev/)
-[![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933)](https://nodejs.org/)
-[![Database](https://img.shields.io/badge/Database-PostgreSQL-4169E1)](https://www.postgresql.org/)
-[![Status](https://img.shields.io/badge/Status-Development-orange)](#project-status)
 
 </div>
 
----
+![RCMP landing page](docs/screenshots/01-landing.png)
 
-## Table of Contents
+## At a glance
 
-- [Overview](#overview)
-- [Project Goals](#project-goals)
-- [Planned Capabilities](#planned-capabilities)
-- [Architecture](#architecture)
-- [Database](#database)
-- [Technology Stack](#technology-stack)
-- [Repository Structure](#repository-structure)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [Available Commands](#available-commands)
-- [Testing and Continuous Integration](#testing-and-continuous-integration)
-- [Development Workflow](#development-workflow)
-- [Team](#team)
-- [Project Status](#project-status)
-- [Documentation](#documentation)
-- [Security Notes](#security-notes)
-- [Licence](#licence)
-
-## Overview
-
-The **Research Collaboration and Mentorship Platform** is a university software engineering project focused on making academic collaboration easier to organise. The platform is intended to support students and researchers as they find collaborators, define responsibilities, request mentorship, and coordinate private project work.
-
-The project is being developed for **M35376: Software Engineering Theory and Practice**, University of Portsmouth, **Team 02, Iteration 1**.
-
-> **Current status:** This repository contains the project scaffold, configuration, architecture notes, a starter database schema with automated tests, and the CI setup. The full set of platform features is not yet implemented. Capabilities described below represent the intended direction of the project and should not be read as completed functionality.
-
-## Project Goals
-
-- Make it easier for students and researchers to discover potential collaborators.
-- Support clear agreement on project roles, tasks, and responsibilities.
-- Provide a structured way to request and organise mentorship.
-- Give project teams a central workspace for coordination and files.
-- Encourage maintainable, secure, and testable software development.
-- Use version control, code review, and continuous integration throughout development.
-
-## Planned Capabilities
-
-| Area | Intended purpose |
-|---|---|
-| User profiles | Present research interests, skills, and academic profiles. |
-| Projects and collaboration | Create research projects and find or invite collaborators. |
-| Responsibilities | Agree on team roles and project responsibilities. |
-| Mentorship | Discover mentors and manage mentorship requests. |
-| Workspace and files | Coordinate project work and manage project documents. |
-| Notifications and moderation | Support project updates, notifications, and platform oversight. |
-| Subscriptions and compensation | Represent the proposed subscription and paid-support model. |
-
-These are planned capability areas. Their availability depends on implementation and testing progress.
-
-## Architecture
-
-The project uses a **three-layer client-server modular monolith** design: a React client communicates with a Node.js and Express application, which accesses PostgreSQL and file storage.
-
-| Layer | Components | Responsibility |
+| Fact | Value | Where it is checked |
 |---|---|---|
-| Presentation | **C1**: React web client (Vite) | User interface and interaction with the backend API. |
-| Application / logic | **C2** API gateway and authentication; **C3** users and profiles; **C4** projects and collaboration; **C5** mentorship; **C6** workspace and files; **C7** notifications and moderation; **C10** subscriptions and compensation | API endpoints and application rules, organised into logical modules within one backend application. |
-| Data and storage | **C8**: PostgreSQL; **C9**: encrypted file storage | Persistent relational data and the planned storage of files up to 10 MB. |
+| Requirements from Coursework 1 | 88 (14 user, 56 functional, 18 non-functional): 67 done, 11 partial, 6 simulated, 4 deferred | `docs/REQUIREMENTS_STATUS.md`, built by `npm run docs` |
+| Client | 28 pages, React 18 + Vite | `client/src/pages` |
+| API | 71 routes, Express 5 | `docs/API.md`, `docs/source/api.rst` |
+| Code size | 2,647 lines server and shared, 4,151 lines client, 2,109 lines of tests | `wc -l` |
+| Automated tests | 224 in 20 suites, all passing | `npm test`, `docs/evidence/TEST_REPORT.txt` |
+| Coverage (server and shared code) | 97.8 % lines, 82.6 % branches, 93.4 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
+| Mutation score (shared rules) | 92.1 % of 766 mutants caught | `npm run mutation` |
+| Accessibility | no serious or critical axe-core finding on 24 routes at 360, 768 and 1280 px | test TC-E2E-10 |
+| Load (50 users, 2,000 requests, in process) | p95 about 200 ms, no server errors | `npm run load` |
 
-For the current architecture notes, see [`docs/architecture.md`](docs/architecture.md).
+Every number above comes from a command in this repository. If a number in the report and a number here disagree, run the command and trust the output.
 
-## Database
-
-The starter schema lives in [`server/db/init.sql`](server/db/init.sql) and is loaded automatically by Docker Compose the first time the database starts. It is safe to run more than once.
-
-| Table | Purpose |
-|---|---|
-| `users` | Accounts, salted password hashes, and platform role (`user` or `administrator`). |
-| `projects` | Research project briefs: owner, title, research question, stage, visibility, status. |
-| `workspace_members` | Which users belong to which project workspace, and their role (`owner`, `member`, `mentor`). |
-| `tasks` | Workspace tasks with database-level rules: title 3 to 20 characters, optional description up to 250 characters, at most three tags. |
-
-These rules come from requirements FR-042 to FR-044 and are checked by `server/tests/schema.test.js`. More detail is in [`docs/database-schema.md`](docs/database-schema.md).
-
-> Docker only runs `init.sql` when the database volume is created for the first time. After changing the schema, reset the local database with `docker compose down -v` and then `docker compose up -d`. This deletes local data.
-
-## Technology Stack
-
-| Technology | Intended use |
-|---|---|
-| Node.js 24 | JavaScript runtime for the backend |
-| Express 5 | Backend API |
-| React and Vite | Frontend application and development server |
-| PostgreSQL 16 | Relational database |
-| `pg` | PostgreSQL client for Node.js |
-| `jsonwebtoken` | JWT-based authentication support |
-| `bcrypt` | Password-hashing support |
-| `helmet` and `cors` | HTTP security headers and cross-origin configuration |
-| Jest and Supertest | Backend testing |
-| Vitest and Testing Library | Frontend testing |
-| ESLint | Static analysis and code-quality checks |
-| GitHub Actions | Continuous integration workflow |
-| Docker Compose | Local supporting services, including PostgreSQL |
-
-Actual functionality and readiness depend on implementation, configuration, and successful tests.
-
-## Repository Structure
-
-```text
-research-collaboration-mentorship-platform/
-├── .github/
-│   ├── ISSUE_TEMPLATE/          # Issue templates
-│   ├── workflows/               # GitHub Actions workflows (ci.yml)
-│   └── pull_request_template.md
-├── client/                      # React + Vite frontend
-│   └── src/                     # Frontend source and tests
-├── server/
-│   ├── db/                      # Database schema (init.sql)
-│   ├── src/                     # Express app and database access
-│   └── tests/                   # Backend tests (API and schema)
-├── docs/                        # Architecture and database documentation
-├── scripts/                     # Project utility scripts
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
-├── CONTRIBUTING.md
-├── docker-compose.yml
-└── README.md
-```
-
-## Getting Started
-
-### Prerequisites
-
-- [Node.js 24](https://nodejs.org/) and npm
-- [Git](https://git-scm.com/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (optional, for running PostgreSQL through Docker Compose)
-
-Check your installed versions:
+## Quick start
 
 ```bash
-node --version
-npm --version
-git --version
+npm ci && npm --prefix client ci && npm run build
+docker compose up -d db
+npm start                      # http://localhost:3000
 ```
 
-### 1. Clone the repository
+Sign in with a demo account from the buttons on the sign-in page (password `Demo@1234`).
+
+## Table of contents
+
+1. [Overview](#1-overview)
+2. [Project goals](#2-project-goals)
+3. [Features](#3-features)
+4. [Architecture](#4-architecture)
+5. [Technology stack](#5-technology-stack)
+6. [Screenshots](#6-screenshots)
+7. [Repository structure](#7-repository-structure)
+8. [Getting started](#8-getting-started)
+9. [Configuration](#9-configuration)
+10. [Available commands](#10-available-commands)
+11. [Testing](#11-testing)
+12. [Development workflow](#12-development-workflow)
+13. [Security notes](#13-security-notes)
+14. [Known limitations](#14-known-limitations)
+15. [Team](#15-team)
+16. [Documentation](#16-documentation)
+17. [Troubleshooting](#17-troubleshooting)
+18. [Licence](#18-licence)
+
+## 1. Overview
+
+The **Research Collaboration and Mentorship Platform (RCMP)** helps students and early-career researchers find collaborators, turn an idea into a clear project brief, agree how a team will work, organise tasks and files, and ask for mentorship or researcher support. It is the Coursework 2 implementation of the system specified and designed by Team 02 in Coursework 1 (University of Portsmouth, module **M35376 Software Engineering Theory and Practice**).
+
+This repository contains a working three-tier system, not a mock-up: a React single-page client, an Express API on Node.js 24 and a PostgreSQL 16 database, with an automated test suite (Jest, Supertest, Playwright, axe-core) that runs against the real server and a real database.
+
+## 2. Project goals
+
+- Make it quick to find the right people and projects, with profile and project visibility the user controls.
+- Replace vague collaborations with an explicit **team agreement** (roles, contributions, communication, authorship, deadlines) that every member acknowledges.
+- Give each team a private **workspace**: task board, milestones and encrypted file storage.
+- Offer **mentorship** and paid **researcher support** through subscription plans with clear allowances.
+- Keep the platform safe: moderation, reports, an audit trail and strict server-side authorisation.
+- Be honest about what is simulated (payments and payouts) and what is real.
+
+## 3. Features
+
+| Area | What you can do | Spec |
+|---|---|---|
+| Accounts and profiles | Register, sign in, reset a forgotten password, edit a profile with per-field visibility, export or delete your data | FR-001 to 011 |
+| Discover | Search projects and people with filters; send an interest request or an invitation | FR-012 to 020 |
+| Projects | Draft and publish a project brief, set its status and visibility | FR-021 to 026 |
+| Team agreement | Versioned agreement, publish, acknowledge, stale-edit conflict detection (409) | FR-024 to 027 |
+| Workspace | Kanban task board, milestones, file upload (10 MiB limit, encrypted at rest) | FR-027 to 032, 042 to 044 |
+| Notifications | In-app notifications with per-category preferences | FR-033 to 035 |
+| Administration | Approve researchers, handle reports, read the audit log, approve compensation | FR-036 to 038 |
+| Mentorship and support | Mentor directory and requests; researcher support queue with ratings | UC-05; FR-048 to 051 |
+| Subscriptions | Four plans (Explorer free, Scholar Basic, Plus and Pro) with monthly request allowances, upgrade or cancel (sandbox payment) | FR-045 to 047 |
+| Compensation | Statements and payouts for researchers (sandbox) | FR-052 to 056 |
+| Landing page | Interactive 3-D effects: tilting cards, a drag-and-rotate three-layer stack, a network globe; all switch off for users who prefer reduced motion | NFR-012 |
+| Website extras | Dark theme with a toggle (remembered in the browser), reading-progress bar, back-to-top button, print stylesheet, per-page titles and meta descriptions, Terms and Cookies pages, consent notice and mailto link on the contact form | extra |
+| **Scout** help assistant | In-product guide that answers questions about using RCMP and politely declines anything else | extra |
+
+**Scout** is a retrieval assistant over a curated knowledge base. It is deliberately *not* a large language model: it cannot invent plan limits, sends no user text to a third party and is fully testable. Off-topic questions get a clear "I only help with this platform" reply.
+
+## 4. Architecture
+
+```
+┌────────────────────────┐   HTTPS / JSON    ┌───────────────────────────────┐   SQL (pg)       ┌───────────────┐
+│  Tier 1 - Browser       │ ────────────────▶ │  Tier 2 - Node.js + Express    │ ───────────────▶ │ Tier 3         │
+│  client/ React 18+Vite  │ ◀──────────────── │  server/app.js    gateway      │ ◀─────────────── │ PostgreSQL 16  │
+│  react-router, lazy     │   JWT bearer      │  server/services.js  rules     │   one transaction│ + AES-256-GCM  │
+└────────────────────────┘                    │  server/db.js  Unit of Work     │   per request    │ file store     │
+        shared, unit-tested rules             └───────────────────────────────┘                  └───────────────┘
+        shared/{validators,rules,constants}.js are used by BOTH tiers
+```
+
+This is the **closed three-layer modular monolith** of Coursework 1 (components C1 to C10): each layer calls only the layer below it.
+
+- **Tier 1 (client):** a React single-page app. Pages are lazy-loaded chunks; no business rule is decided here. The client calls `/api/*`, renders the answer and uses the shared validators for instant feedback only (the server re-checks everything).
+- **Tier 2 (server):** Express 5 gateway (`app.js`: headers, throttles, JWT check, error mapping), business services (`services.js`), authentication (`auth.js`), encrypted file storage (`storage.js`), the Scout assistant (`assistant.js`) and the e-mail sender (`mailer.js`).
+- **Tier 3 (database):** PostgreSQL with foreign keys, `CHECK` constraints and unique indexes as a second line of defence behind the application rules.
+- **Unit of Work:** each request loads the data, applies the rules in memory and writes back only the difference in **one transaction**. Writers are serialised by an advisory lock; reads run in a REPEATABLE READ snapshot.
+
+Details, the Coursework 1 to Coursework 2 changes and the rationale are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## 5. Technology stack
+
+| Layer | Used | Coursework 1 claim |
+|---|---|---|
+| Client | React 18, Vite, react-router-dom 7 | React 18 + Vite (matches) |
+| Server | Node.js 24 LTS, Express 5, helmet, cors | Node 24 LTS + Express 5.x (matches) |
+| Database | PostgreSQL 16 through `pg` 8 | PostgreSQL 16+ (matches) |
+| Security | bcrypt password hashing, HS256 JWT (`jsonwebtoken`), AES-256-GCM file encryption, helmet CSP | bcrypt, cors, helmet, JWT (matches) |
+| Tests | Jest 30 + Supertest (API, unit), Playwright + axe-core (browser), Cypress + cypress-axe specs, k6, OWASP ZAP baseline | Jest + Supertest, Cypress + axe-core, ZAP, k6 (matches; see section 11 for what runs where) |
+| CI/CD | GitHub Actions with a PostgreSQL service, Docker, Docker Compose | matches |
+
+**Additions beyond Coursework 1** (documented as changes in the report): the Scout help assistant, public pricing and contact pages with an administrator inbox, e-mail PIN verification (on when a mail provider is configured), a Supabase-ready connection (`?sslmode=require`) and the real-administrator bootstrap account.
+
+## 6. Screenshots
+
+| | |
+|---|---|
+| ![Dashboard](docs/screenshots/03-dashboard.png) **Dashboard** | ![Discover](docs/screenshots/04-discover.png) **Discover** |
+| ![Workspace](docs/screenshots/05-workspace.png) **Workspace task board** | ![Team agreement](docs/screenshots/06-team-agreement.png) **Team agreement** |
+| ![Subscription](docs/screenshots/07-subscription.png) **Plans and allowance** | ![Scout](docs/screenshots/08-scout-assistant.png) **Scout help assistant** |
+| ![Pricing](docs/screenshots/11-pricing.png) **Public pricing** | ![Contact](docs/screenshots/12-contact.png) **Contact page** |
+| ![Globe](docs/screenshots/13-network-globe.png) **3-D network globe** | ![Mobile menu](docs/screenshots/14-mobile-menu.png) **Phone navigation** |
+| ![Thanks](docs/screenshots/15-contact-thanks.png) **Contact thank-you page** | ![Inbox](docs/screenshots/16-admin-messages.png) **Admin message inbox** |
+| ![Admin](docs/screenshots/09-admin.png) **Administration** | ![Mobile](docs/screenshots/10-mobile-dashboard.png) **Mobile layout** |
+| ![3-D stack](docs/screenshots/17-stack-3d.png) **Drag-to-rotate 3-D stack** | |
+
+## 7. Repository structure
+
+```
+.
+├── .github/workflows/ci.yml  lint, build, audit, Jest, Playwright + axe (3 browsers), mutation, load smoke, Cypress, OWASP ZAP, k6 (manual)
+├── client/                   Tier 1 - React 18 + Vite
+│   ├── index.html  vite.config.js
+│   ├── public/assets/img/    logos and favicons
+│   └── src/
+│       ├── main.jsx  App.jsx           router, lazy pages, role guards
+│       ├── pages/                      28 pages (Landing, Pricing, Contact, Terms, Cookies, Login, Dashboard, Workspace, Admin ...)
+│       ├── components/                 AppShell, PublicLayout, Modal, Scout, ui (Avatar, Field, Tabs ...)
+│       ├── hooks/  lib/                data loading, session, API client, shared-rules loader, effects
+│       └── styles/css/                 design system, motion, assistant
+├── server/                   Tier 2 - API and data access
+│   ├── index.js              entry point: config, migrate, seed, listen, serves client/dist
+│   ├── app.js                Express app: headers, throttles, JWT check, error mapping
+│   ├── services.js           every use case and its authorisation
+│   ├── db.js  pool.js        schema, migrations, Unit of Work, pg pool
+│   ├── auth.js  storage.js  assistant.js  mailer.js  seed.js  backup.js
+├── shared/                   validators.js, rules.js, constants.js - used by browser and server
+├── tests/                    Jest suites (unit, property, db, API, security, contract, smoke, assistant), tests/e2e (Playwright + axe), load.js
+├── stryker.config.json       mutation testing of the shared rules
+├── cypress/  cypress.config.js   Cypress specs (UC-02, UC-04, NFR-011/013)
+├── k6/load.js                50 users, 15 minutes
+├── .zap/rules.tsv            ZAP baseline rule exceptions
+├── scripts/                  test-report.js, requirements-register.js, build-docs.js, export-schema.js
+├── docs/                     architecture, API, test plan, requirements status, evidence, screenshots
+├── Dockerfile  docker-compose.yml  .env.example  eslint.config.js
+├── CONTRIBUTING.md
+└── package.json
+```
+
+## 8. Getting started
+
+**Requirements:** Node.js **24 LTS** and PostgreSQL **16** (14+ works).
 
 ```bash
 git clone https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform.git
 cd research-collaboration-mentorship-platform
+
+npm ci                         # server dependencies
+npm --prefix client ci         # client dependencies
+npm run build                  # builds the React client into client/dist
+docker compose up -d db        # PostgreSQL 16 on localhost:5432 (user, password, database: rcmp)
+npm start                      # http://localhost:3000  (Express serves the API and the built client)
 ```
 
-### 2. Start the database
+Develop with hot reload: `npm run dev` (Express on :3000 and the Vite dev server on :5173, which proxies `/api`).
+Use your own PostgreSQL: `DATABASE_URL=postgres://user:pass@host:5432/dbname npm start`.
+Run everything in containers: `docker compose up --build`.
 
-From the repository root:
+On first start the schema is created and demo data is loaded. Health check: <http://localhost:3000/api/health>.
 
-```bash
-docker compose up -d
-```
+**Demo accounts** (password `Demo@1234`, one-click buttons on the sign-in page; they exist only outside production):
 
-If you are not using Docker, create a local PostgreSQL database that matches `DATABASE_URL` in `server/.env`, then run `server/db/init.sql` against it.
-
-### 3. Configure and run the backend
-
-```bash
-cd server
-```
-
-Create a local environment file.
-
-**Windows PowerShell:**
-
-```powershell
-Copy-Item .env.example .env
-```
-
-**macOS / Linux:**
-
-```bash
-cp .env.example .env
-```
-
-Open `server/.env` and update its values for your local environment. Do not use production credentials in local development.
-
-Install the dependencies and start the development server:
-
-```bash
-npm install
-npm run dev
-```
-
-The health endpoint is at <http://localhost:3000/api/health>. It works only if the backend starts successfully and its configuration is valid.
-
-### 4. Configure and run the frontend
-
-Open a **second terminal** at the repository root, then run:
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Vite shows the local URL in the terminal, normally <http://localhost:5173>. Keep both terminals running while you use the application.
-
-### 5. Stop local services
-
-```bash
-docker compose down
-```
-
-This stops the Compose services. It does not delete the database volume. Add `-v` only if you want to delete local data.
-
-## Configuration
-
-Backend configuration is managed through `server/.env`. The tracked `server/.env.example` file documents the variable names and example placeholders.
-
-1. Copy `.env.example` to `.env`.
-2. Read the variable names and comments in the example file.
-3. Set values appropriate for your local PostgreSQL instance and application.
-4. Keep `.env` out of commits.
-5. Never place passwords, access tokens, private keys, or production secrets in source code or documentation.
-
-A placeholder value is not a secure or working configuration. Check the environment example and the backend configuration code.
-
-## Available Commands
-
-Run each command from the directory shown.
-
-| Directory | Command | Purpose |
+| Account | Role | Good for |
 |---|---|---|
-| `server/` | `npm install` | Install backend dependencies |
-| `server/` | `npm run dev` | Start the backend in development mode |
-| `server/` | `npm test` | Run backend tests (schema tests run when `DATABASE_URL` is set) |
-| `server/` | `npm run lint` | Check backend code with ESLint |
-| `client/` | `npm install` | Install frontend dependencies |
-| `client/` | `npm run dev` | Start the Vite development server |
-| `client/` | `npm test` | Run frontend tests |
-| `client/` | `npm run lint` | Check frontend code with ESLint |
-| `client/` | `npm run build` | Build the frontend for production |
+| aisha@port.ac.uk | Student, Plus plan | projects, workspace, agreement, mentors, support, subscription |
+| priya.nair@port.ac.uk | Student, free plan | plan limit (402) |
+| elena.vance@port.ac.uk | Researcher | support queue, compensation |
+| marcus.okafor@port.ac.uk | Mentor | mentorship inbox |
+| admin@rcmp.example | Administrator | approvals, reports, audit |
 
-If a command is unavailable, check the `scripts` section of the relevant `package.json`.
+**The real administrator.** Separate from the demo accounts, the first start also creates the platform administrator `muhammad.habib@myport.ac.uk` (change it with `RCMP_ADMIN_EMAIL` and `RCMP_ADMIN_NAME`). The demo password does not work for this account. Set `RCMP_ADMIN_PASSWORD` before the first start, or read the one-time password that the server prints in its log, then change it under Profile.
 
-## Testing and Continuous Integration
+If you missed the one-time password, set a new one with `npm run admin:password -- "YourNew#Password1"` (add the admin e-mail as a second argument to target another administrator). Registration never offers the administrator role, so this is the only way to become an administrator.
 
-Every pull request, and every push to `main`, runs the GitHub Actions workflow in [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
+**E-mail verification.** With `RCMP_MAIL_PROVIDER` empty, sign-up works without a PIN. To require a 6-digit code sent to the address, configure Brevo or Resend (`docs/EMAIL_SETUP.md`). To try the flow on your own computer without sending mail, start the server with `RCMP_MAIL_PROVIDER=console` and `RCMP_REQUIRE_VERIFY=1`: the PIN is printed in the terminal. `npm run start:env` reads these settings from a `.env` file. Contact-form messages and notifications go to every administrator.
 
-- **Server job:** starts a PostgreSQL 16 service, then runs `npm ci`, `npm run lint` and `npm test`. The tests include the API health check and the database schema checks (task title length, tag limit, description length).
-- **Client job:** runs `npm ci`, `npm run lint`, `npm test` and `npm run build`.
+The **Demo tools** button (bottom-left, development only) switches user, resets the data and makes the server fail on purpose (offline, database failure, expired session, edit conflict) so every error screen can be demonstrated.
 
-To run the schema tests on your own machine, start the database and set `DATABASE_URL` before testing.
+## 9. Configuration
 
-**Windows PowerShell:**
+Copy [`.env.example`](.env.example) and set the variables in your environment. The important ones:
 
-```powershell
-docker compose up -d
-cd server
-$env:DATABASE_URL = "postgres://rcmp_user:change_me@localhost:5432/rcmp"
-npm test
-```
+| Variable | Purpose | Default |
+|---|---|---|
+| `DATABASE_URL` | PostgreSQL connection string | `postgres://rcmp:rcmp@localhost:5432/rcmp` (required in production) |
+| `PORT` | HTTP port | `3000` |
+| `RCMP_JWT_SECRET` | Token signing secret, 32+ characters | generated into `data/` in development; **required in production** |
+| `RCMP_FILE_KEY` | 64 hex characters, AES-256 key for uploads | generated into `data/` in development; **required in production** |
+| `RCMP_DATA_DIR` | Encrypted uploads and dev secrets | `./data` |
+| `RCMP_FORCE_HTTPS` | `1` redirects HTTP to HTTPS and sends HSTS | `0` |
+| `RCMP_TRUST_PROXY` | `1` trusts `X-Forwarded-For` (only behind your own proxy) | `0` |
+| `NODE_ENV` | `production` disables demo tools and demo reset | unset |
+| `RCMP_DEMO_LOGIN` | In production the demo accounts get a random password; `1` keeps the public demo password | unset |
 
-**macOS / Linux:**
+## 10. Available commands
 
-```bash
-docker compose up -d
-cd server
-DATABASE_URL=postgres://rcmp_user:change_me@localhost:5432/rcmp npm test
-```
+| Command | What it does |
+|---|---|
+| `npm start` | Start the server (migrates and seeds an empty database) |
+| `npm run start:env` | Start the server with the settings in a `.env` file |
+| `npm run admin:password -- "New#Pass1"` | Set a new password for the real administrator |
+| `npm test` | Run all 224 tests (Jest) |
+| `npm run test:smoke` | 4 quick checks that the server is alive |
+| `npm run test:property` | Property-based tests (fast-check, random inputs) |
+| `npm run test:security` | OWASP-style security tests |
+| `npm run test:contract` | API response-shape tests |
+| `npm run mutation` | Stryker mutation testing of the shared rules |
+| `npm run audit:deps` | `npm audit` for server and client |
+| `npm run e2e:firefox` / `e2e:webkit` | Browser suite in Firefox or WebKit |
+| `npm run test:unit` | Unit tests only, no database needed |
+| `npm run test:api` | Database and API tests |
+| `npm run e2e` | Browser tests: Playwright drives Chromium, axe-core audits every page at 360, 768 and 1280 px |
+| `npm run build` | Build the React client (Vite) into `client/dist` |
+| `npm run cypress` | Cypress specs against a running server (`npm start` first) |
+| `npm run k6` | k6 load test: 50 users for 15 minutes (needs k6 installed) |
+| `npm run coverage` | Full suite with the coverage gate (lines ≥ 90 %, functions ≥ 85 %) |
+| `npm run report` | Write `docs/evidence/TEST_REPORT.txt` and `COVERAGE_REPORT.txt` |
+| `npm run load` | Node load smoke test: 50 concurrent users, 2,000 requests, p95 must stay under 2 s |
+| `npm run backup` | `pg_dump` with a checksummed manifest |
+| `npm run lint` | ESLint over server, shared, tests, client, Cypress and k6 |
+| `npm run docs` | Regenerate the requirement register and the Sphinx pages in `docs/source` |
 
-Without `DATABASE_URL`, the schema tests are skipped and the other tests still run. The schema tests use transactions that are rolled back, so they leave no data behind.
+## 11. Testing
 
-## Development Workflow
+Tests run against the **real HTTP server and a real PostgreSQL database**, each test file in its own throw-away database. With PostgreSQL's server programs installed the tests start a temporary cluster themselves; otherwise set `TEST_DATABASE_URL` (for the Compose database: `postgres://rcmp:rcmp@localhost:5432/postgres`). The browser tests need Chromium: `npx playwright install chromium`.
 
-The team uses Git and GitHub to track work and review changes.
+| Layer | Tool | What is checked |
+|---|---|---|
+| Unit: validation, rules, security | Jest | input partitions and exact boundaries (`validators`, `validators2`, `rules`, `rules2`), state machines, hashing, tokens |
+| Property-based | Jest + fast-check | rules hold for hundreds of random inputs (titles, escaping, file names, request states, allowance) |
+| Security | Jest + Supertest | SQL injection text, forged and expired tokens, wrong roles, headers and CSP, malformed bodies, hash leakage, throttling |
+| Contract | Jest + Supertest | response shapes and status codes the client relies on |
+| Smoke | Jest + Supertest | the server and built client are alive (run first) |
+| Mutation | Stryker | 766 small deliberate bugs in the shared rules; the tests catch 92.1 % |
+| Database | Jest + `pg` | constraints, rollback, concurrency, backup and restore, SQL-injection text stays data |
+| API | Jest + Supertest | every endpoint family, authorisation, status codes, throttling, e-mail PIN, contact form |
+| Assistant | Jest | knowledge base routing, refusals, no reflection, personalisation |
+| End to end and accessibility | Playwright + axe-core | sign-in, access control, forms, Scout, mobile layout, no serious axe violations on every page at three widths |
+| Cypress specs | Cypress + cypress-axe | UC-02, UC-04 and NFR-011/013 as in the Coursework 1 plan (run in CI or locally) |
+| Load | `tests/load.js` and `k6/load.js` | 50 concurrent users, p95 under 2 s, no 5xx |
+| Security scan | OWASP ZAP baseline (CI job) | passive scan of the running app |
+| Dependencies and style | `npm audit`, ESLint | 0 known vulnerable packages; 0 lint errors |
 
-1. **Update `main`:** start from the latest version of the main branch.
-2. **Create a feature branch:** use a short, descriptive branch name.
-3. **Make focused changes:** keep each change related to a clear task.
-4. **Test your changes:** run the relevant tests, lint checks, and the frontend build.
-5. **Commit your work:** use a meaningful commit message.
-6. **Push the branch:** publish it to GitHub.
-7. **Open a pull request:** describe the changes and link the related issue.
-8. **Request review:** ask another team member to review the work before merging.
+**Latest local run (Node 22.23, PostgreSQL 16): 224 of 224 pass; 97.8 % lines, 82.6 % branches, 93.4 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. The Cypress, k6, ZAP, Docker and GitHub Actions files are written but have to be run on a machine or runner with those tools; the test plan says which results are real and which are pending.
 
-Example commands:
+## 12. Development workflow
 
-```bash
-git switch main
-git pull
-git switch -c feature/short-description
-```
+- `main` is always releasable and protected; changes arrive by pull request with passing CI and one review.
+- Branches: `feature/<issue>-<name>`, `fix/<issue>-<name>`, `docs/<topic>`. Commit format: `area: what changed (#issue)`.
+- Write the test case first (the plan is in `docs/TEST_PLAN.md`), then the code.
+- GitHub Actions runs lint, the Vite build, the dependency audit, the smoke, unit, property, security, contract and API tests, the browser tests in Chromium, Firefox and WebKit, the coverage gate, mutation testing, the load smoke test, Cypress and the ZAP baseline, and uploads the evidence files.
 
-After making and testing changes:
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) and the templates in `.github/`.
 
-```bash
-git add .
-git commit -m "Describe the change"
-git push -u origin feature/short-description
-```
+## 13. Security notes
 
-Then open a pull request on GitHub. Follow [`CONTRIBUTING.md`](CONTRIBUTING.md) for the detailed branch, commit, and review rules.
+- Passwords are hashed with salted **bcrypt** (12 rounds); sessions are 8-hour signed HS256 tokens with a password-version claim, so they are revoked when the password changes; reset links are single-use and expire after 30 minutes.
+- Authorisation is enforced **on the server** for every request; private profile fields are removed before the response leaves the API.
+- Throttles: login 8 failures per 10 minutes, registration and verification 12 per 10 minutes, contact form 5 per 10 minutes, assistant 30 per minute (HTTP 429).
+- E-mail PIN verification: 6 digits from a CSPRNG, stored only as an HMAC, valid 10 minutes, 5 attempts, 60 s between resends. Enabled when a mail provider is configured (`docs/EMAIL_SETUP.md`).
+- Uploaded files are encrypted with AES-256-GCM, capped at 10 MiB and stored outside the web root.
+- `helmet` sets a strict Content-Security-Policy (no inline or eval scripts), `X-Frame-Options`, `nosniff`; the API sends `Cache-Control: no-store`; HSTS and HTTP-to-HTTPS redirect with `RCMP_FORCE_HTTPS=1`. All SQL is parameterised; React escapes all rendered text; the server also neutralises markup on input.
+- Hidden files (`/.env`, `/.git/...`) and project folders (`/data`, `/server`, `/tests`, ...) return 404 instead of the app page; `robots.txt` and `security.txt` are served. The full list of controls, tests and known limits is in [`docs/SECURITY.md`](docs/SECURITY.md).
+- No tracking cookies, no analytics and no third-party scripts. The browser keeps only a few small items: the sign-in token, the theme choice, demo counters and Scout settings (listed on the Cookies page in the app), so no cookie banner is needed.
+- Never commit `.env`, secrets or the `data/` folder. In production set your own `RCMP_JWT_SECRET` and `RCMP_FILE_KEY`, terminate TLS at your host or proxy, and use a managed PostgreSQL (Supabase with the Session pooler works; add `?sslmode=require`).
 
-## Team
+## 14. Known limitations
 
-| No. | Name | GitHub username | Role |
-|---|---|---|---|
-| 1 | Muhammad Shaheer Habib | [@ShaheerHabib12](https://github.com/ShaheerHabib12) | **Team Leader** |
-| 2 | Rana Muhammad Sami Noon | [@Saminoon](https://github.com/Saminoon) | Team Member |
-| 3 | Muhammad Rameel Khan | [@mrameelkhan](https://github.com/mrameelkhan) | Team Member |
-| 4 | Ahmad Riaz | [@AhmadRiaz99](https://github.com/AhmadRiaz99) | Team Member |
-| 5 | Hafiz Muhammad Abu Hurraira | [@AbuHurraira2424](https://github.com/AbuHurraira2424) | Team Member |
+Stated plainly so nobody is surprised:
 
-## Project Status
+- Each request loads whole collections (simple and correct, but it will not scale to large data).
+- The session token lives in `localStorage` (the strict CSP limits script injection, but an HttpOnly cookie would be stronger).
+- The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
+- Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
+- TLS is provided by the host or reverse proxy, not by the Node process.
+- Cypress, k6, ZAP, Docker and GitHub Actions are written but were not executed in the build sandbox; see `docs/TEST_PLAN.md`.
+- No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
-**Current stage: Iteration 1, scaffold plus starter database.**
+## 15. Team
 
-The repository includes the frontend and backend structure, project documentation, configuration examples, a starter PostgreSQL schema (users, projects, workspace members, tasks) with automated constraint tests, and a CI workflow that runs lint, tests and the frontend build.
+**Team 02, M35376 Software Engineering Theory and Practice, University of Portsmouth**
 
-The complete platform is still under development. Do not assume that all planned capabilities, authentication flows, database operations, file-storage controls, or subscription features are production-ready. Use the repository's issues, pull requests, tests, and coursework documentation to track progress.
+| Name | Role |
+|---|---|
+| Muhammad Shaheer Habib (Up2601143) | Team Leader |
+| Muhammad Rameel Khan (Up2601145) | Team Member |
+| Rana Muhammad Sami Noon (Up2601149) | Team Member |
+| Ahmad Riaz (Up2601151) | Team Member |
+| Hafiz Muhammad Abu Hurraira (Up2601139) | Team Member |
 
-## Documentation
+Individual contributions are recorded in the report's Contributions Table and are visible in the commit history.
 
-- [Architecture](docs/architecture.md): current architecture notes
-- [Database schema](docs/database-schema.md): tables, rules, and the requirements they support
-- [Contributing guidelines](CONTRIBUTING.md): branch, commit, and review workflow
-- [GitHub repository](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform): source code, issues, pull requests, and CI results
+## 16. Documentation
 
-## Security Notes
+| Document | Contents |
+|---|---|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | tiers, design changes from Coursework 1, security, limits |
+| [`docs/API.md`](docs/API.md) | every endpoint with status codes |
+| [`docs/REQUIREMENTS_STATUS.md`](docs/REQUIREMENTS_STATUS.md) | all 88 Coursework 1 requirements with status, code unit and tests |
+| [`docs/source/`](docs/source) | Sphinx sources for Read the Docs (`.readthedocs.yaml`) |
+| [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | test methodology, partitions, NFR matrix, traceability, results |
+| [`docs/SECURITY.md`](docs/SECURITY.md) | security controls, the tests that check them, known limits |
+| [`docs/DESIGN_AND_AUDIT.md`](docs/DESIGN_AND_AUDIT.md) | UI/UX decisions and self-audits |
+| [`docs/USER_TESTING.md`](docs/USER_TESTING.md) | usability test protocol |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | branching, commits, reviews |
 
-- Never commit `.env` files, passwords, API keys, access tokens, private keys, or personal data.
-- Keep local secrets out of issue descriptions, pull requests, screenshots, and logs.
-- Review changes before committing and pushing them.
-- Report security concerns privately to the repository owner rather than publishing exploit details in a public issue.
-- Treat the current scaffold as a development project, not a production-ready service.
+## 17. Troubleshooting
 
-## Licence
+| Problem | Fix |
+|---|---|
+| `ECONNREFUSED 127.0.0.1:5432` | PostgreSQL is not running. Start it with `docker compose up -d db`, or set `DATABASE_URL` to your own server. |
+| Blank page at `http://localhost:3000` | The client is not built. Run `npm run build`, then `npm start` again. |
+| Browser tests fail with "Executable doesn't exist" | Run `npx playwright install chromium`, or set `CHROMIUM_PATH` to an installed Chromium. |
+| Tests cannot find a database | Set `TEST_DATABASE_URL=postgres://rcmp:rcmp@localhost:5432/postgres` and start the database first. |
+| `Port 3000 already in use` | Set `PORT=3100` before `npm start`. |
+| Sign-in is locked with HTTP 429 | The throttle allows 8 failures per 10 minutes. Wait, or restart the server. |
+| `npm run mutation` is slow | It re-runs the rules tests for hundreds of small changes. Expect 3 to 10 minutes. |
 
-This is a university coursework project for educational purposes. No open-source licence has been granted. All rights are reserved by the authors unless the team agrees otherwise.
+## 18. Licence
+
+No open-source licence has been granted. This is university coursework and all rights remain with the authors unless the team agrees otherwise.
