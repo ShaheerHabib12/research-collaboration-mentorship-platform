@@ -34,6 +34,7 @@ async function signIn(p, email) {
   await p.goto(t.base + '/login');
   await p.fill('#email', email); await p.fill('#password', 'Demo@1234'); await p.click('#form button[type=submit]');
   await p.waitForURL(/dashboard$/, { waitUntil: 'commit' });
+  await p.waitForSelector('h1'); // let the lazy dashboard chunk finish before the test navigates again (Firefox logs a cancelled chunk otherwise)
 }
 
 T('TC-E2E-01 sign in: bad password shows an error and stays; good password reaches the dashboard', async () => {
@@ -273,7 +274,7 @@ T('TC-E2E-20 legal pages: Terms and Cookies render with their own title and meta
     assert.match(await p.title(), title); assert.ok((await p.locator('h1').first().innerText()).includes(h1));
     assert.ok((await p.getAttribute('meta[name=description]', 'content')).length > 40, path + ' has a meta description');
   }
-  await p.goto(t.base + '/'); await p.click('.pub-footer a[href="/terms"]'); await p.waitForURL(/\/terms$/, { waitUntil: 'commit' });
+  await p.goto(t.base + '/'); await p.click('.pub-footer a[href="/terms"]'); await p.waitForURL(/\/terms$/, { waitUntil: 'commit' }); await p.waitForSelector('h1');
   await p.goto(t.base + '/contact'); await p.waitForSelector('a[href="mailto:muhammad.habib@myport.ac.uk"]', { timeout: 8000 });
   assert.deepEqual(p.errors, []);
 }, TO);

@@ -106,12 +106,16 @@ jobs:
       - run: npm ci
       - run: npm --prefix client ci
       - run: npm run build
+      - name: Start the application and wait until it answers
+        run: |
+          nohup npm start > server.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf http://127.0.0.1:3000/api/health >/dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:3000/api/health
+      - name: Make sure the Cypress binary is installed
+        run: npx cypress verify || npx cypress install
       - uses: cypress-io/github-action@v6
         with:
           install: false
-          start: npm start
-          wait-on: 'http://localhost:3000/api/health'
-          wait-on-timeout: 90
       - uses: actions/upload-artifact@v4
         if: failure()
         with: { name: cypress-screenshots, path: cypress/screenshots, if-no-files-found: ignore }
@@ -139,7 +143,8 @@ jobs:
       - name: Start the application
         run: |
           nohup npm start > server.log 2>&1 &
-          npx --yes wait-on http://localhost:3000/api/health --timeout 90000
+          for i in $(seq 1 90); do curl -sf http://127.0.0.1:3000/api/health >/dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:3000/api/health
       - uses: zaproxy/action-baseline@v0.14.0
         with:
           target: 'http://localhost:3000'
@@ -172,6 +177,7 @@ jobs:
       - run: npm run build
       - run: |
           nohup npm start > server.log 2>&1 &
-          npx --yes wait-on http://localhost:3000/api/health --timeout 90000
+          for i in $(seq 1 90); do curl -sf http://127.0.0.1:3000/api/health >/dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:3000/api/health
       - uses: grafana/setup-k6-action@v1
       - run: k6 run -e BASE_URL=http://localhost:3000 k6/load.js

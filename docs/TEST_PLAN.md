@@ -255,7 +255,7 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | k6 15-minute test | Written; **not run** (k6 not installable in the sandbox) |
 | OWASP ZAP baseline | CI job written; **not run** |
 | Docker image and Compose | Written; **not run** (no Docker in the sandbox); the CI service container uses the same PostgreSQL 16 image |
-| GitHub Actions workflow | Run once on 14 Nov 2026: lint passed and 222 of 224 tests passed in the main job. It found three real problems in the setup (backup test needs PostgreSQL 16 client tools; one browser click on a slow runner; four Firefox-only test details), all fixed in `ci.yml` and `e2e.test.js`. **New run pending** |
+| GitHub Actions workflow | Run on 14 Nov 2026. Main job **passed**: lint, build, dependency audit, all 224 tests, coverage gate, mutation gate and load smoke test. OWASP ZAP baseline against the running app: **0 FAIL, 7 WARN, 63 PASS** (the warnings are informational: no Permissions-Policy header, no COEP header, inline styles allowed by the CSP, missing Subresource Integrity on the font link, non-storable API responses, and two scanner notes). The run also found setup problems that are now fixed in `ci.yml` and `e2e.test.js` (PostgreSQL 16 client tools for the backup test, Firefox-only test details, the Cypress server wait). A new run is pending, and the WebKit result was not available when this was written |
 
 ## 5. Results (last run: see timestamps inside the evidence files)
 

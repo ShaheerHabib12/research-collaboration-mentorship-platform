@@ -318,7 +318,7 @@ Stated plainly so nobody is surprised:
 - The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
 - Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
 - TLS is provided by the host or reverse proxy, not by the Node process.
-- Cypress, k6, ZAP and Docker are written but were not executed in the build sandbox. GitHub Actions ran once on 14 November 2026: the main job passed lint and 222 of 224 tests; the failures it found (PostgreSQL 16 client tools for the backup test, one slow-runner click, and Firefox-only test details) are fixed in `.github/workflows/ci.yml` and `tests/e2e/e2e.test.js`, and a new run is pending. See `docs/TEST_PLAN.md`.
+- Cypress, k6, ZAP and Docker are written but were not executed in the build sandbox. GitHub Actions ran on 14 November 2026: the main job passed (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test) and the OWASP ZAP baseline scan of the running app reported 0 FAIL, 7 WARN and 63 PASS. The same run exposed setup problems (PostgreSQL 16 client tools for the backup test, Firefox-only test details, the Cypress server wait); they are fixed in `.github/workflows/ci.yml` and `tests/e2e/e2e.test.js` and a new run is pending. See `docs/TEST_PLAN.md`.
 - No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
 ## 15. Team
