@@ -11,7 +11,7 @@
 ![Backend](https://img.shields.io/badge/Backend-Node.js%2024%20%C2%B7%20Express%205-339933)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL%2016-336791)
 ![Tests](https://img.shields.io/badge/Tests-224%20passing-0d9488)
-![Coverage](https://img.shields.io/badge/Coverage-97.8%25%20lines-0d9488)
+![Coverage](https://img.shields.io/badge/Coverage-97.9%25%20lines-0d9488)
 ![Mutation score](https://img.shields.io/badge/Mutation%20score-92%25-0d9488)
 ![Status](https://img.shields.io/badge/Status-Coursework%202-d97706)
 [![CI](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml)
@@ -29,7 +29,7 @@
 | API | 71 routes, Express 5 | `docs/API.md`, `docs/source/api.rst` |
 | Code size | 2,647 lines server and shared, 4,151 lines client, 2,109 lines of tests | `wc -l` |
 | Automated tests | 224 in 20 suites, all passing | `npm test`, `docs/evidence/TEST_REPORT.txt` |
-| Coverage (server and shared code) | 97.8 % lines, 82.6 % branches, 93.4 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
+| Coverage (server and shared code) | 97.9 % lines, 82.6 % branches, 93.6 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
 | Mutation score (shared rules) | 92.1 % of 766 mutants caught | `npm run mutation` |
 | Accessibility | no serious or critical axe-core finding on 24 routes at 360, 768 and 1280 px | test TC-E2E-10 |
 | Load (50 users, 2,000 requests, in process) | p95 about 200 ms, no server errors | `npm run load` |
@@ -286,12 +286,12 @@ Tests run against the **real HTTP server and a real PostgreSQL database**, each 
 | Security scan | OWASP ZAP baseline (CI job) | passive scan of the running app |
 | Dependencies and style | `npm audit`, ESLint | 0 known vulnerable packages; 0 lint errors |
 
-**Latest local run (Node 22.23, PostgreSQL 16): 224 of 224 pass; 97.8 % lines, 82.6 % branches, 93.4 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. The Cypress, k6, ZAP, Docker and GitHub Actions files are written but have to be run on a machine or runner with those tools; the test plan says which results are real and which are pending.
+**Latest local run (Node 22.23, PostgreSQL 16): 224 of 224 pass; 97.9 % lines, 82.6 % branches, 93.6 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. The Cypress, k6, ZAP, Docker and GitHub Actions files are written but have to be run on a machine or runner with those tools; the test plan says which results are real and which are pending.
 
 ## 12. Development workflow
 
 - `main` is always releasable; changes arrive by pull request with passing CI and one review. Turn on branch protection for `main` in GitHub (Settings, Branches) so the rule is enforced, not just written.
-- Branches: `feature/<issue>-<name>`, `fix/<issue>-<name>`, `docs/<topic>`. Commit format: `area: what changed (#issue)`.
+- Branches: `feature/<issue>-<name>`, `fix/<issue>-<name>`, `docs/<topic>`. Commit format (Conventional Commits): `type(area): what changed (#issue)`, e.g. `fix(tests): steady the sidebar check`.
 - Write the test case first (the plan is in `docs/TEST_PLAN.md`), then the code.
 - GitHub Actions runs lint, the Vite build, the dependency audit, the smoke, unit, property, security, contract and API tests, the browser tests in Chromium, Firefox and WebKit, the coverage gate, mutation testing, the load smoke test, Cypress, a 1-minute k6 run and the ZAP baseline, and uploads the evidence files.
 
@@ -318,7 +318,7 @@ Stated plainly so nobody is surprised:
 - The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
 - Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
 - TLS is provided by the host or reverse proxy, not by the Node process.
-- Cypress, k6 and Docker were not executed in the build sandbox. GitHub Actions ran on 14 November 2026: the main job passed (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress passed, and the OWASP ZAP baseline scan of the running app reported 0 FAIL, 7 WARN and 63 PASS. The same run exposed problems in Firefox and WebKit tests and in the ZAP warnings; they are fixed in the code (Permissions-Policy and COEP headers, a CSP without inline styles or outside origins, no Google Fonts link), in `tests/e2e/e2e.test.js` and in `.github/workflows/ci.yml` (k6 now runs for 1 minute on every push), and a new run is pending. Three ZAP notes that are not defects are ignored with reasons in `.zap/rules.tsv`. See `docs/TEST_PLAN.md`.
+- Docker and the 15-minute k6 run were not executed in the build sandbox. GitHub Actions ran on 14 November 2026. The latest run passed the main job (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress and the OWASP ZAP baseline (0 FAIL, 0 WARN, 67 PASS, 4 ignored with a reason in `.zap/rules.tsv`). The first k6 run used one virtual user because k6 reads `K6_DURATION` itself; the variable is now `LOAD_DURATION` and the 50-user, 1-minute result is pending. The Firefox and WebKit browser tests failed on timing in some runs; the fixes (key routes for axe, instant scroll, no sidebar animation, one retry) are in `tests/e2e/e2e.test.js` and a new run is pending. See `docs/TEST_PLAN.md`.
 - No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
 ## 15. Team

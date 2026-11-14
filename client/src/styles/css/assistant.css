@@ -83,3 +83,5 @@
   .scout *, .scout *::before, .scout *::after { animation: none !important; transition: none !important; }
   .scout-launch.shake svg { transform: scale(1.08); }
 }
+/* Phones: a smaller launcher (still above the 44 px touch target) covers less of the page */
+@media (max-width: 520px) { .scout-launch { width: 52px; height: 52px; } .scout-launch svg { width: 36px; height: 36px; } }

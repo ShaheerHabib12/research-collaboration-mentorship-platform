@@ -16,5 +16,6 @@ const sharedUmd = () => ({
 export default defineConfig({
   plugins: [sharedUmd(), react()],
   server: { port: 5173, proxy: { '/api': 'http://localhost:3000' }, fs: { allow: ['..'] } },
-  build: { outDir: 'dist', emptyOutDir: true, sourcemap: false }
+  // assetsInlineLimit 0: small font files stay real files. An inlined data: font would be blocked by the Content-Security-Policy (font-src 'self').
+  build: { outDir: 'dist', emptyOutDir: true, sourcemap: false, assetsInlineLimit: 0 }
 });

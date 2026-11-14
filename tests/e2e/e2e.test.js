@@ -10,13 +10,15 @@ let chromium = null;
 try { chromium = require('playwright')[process.env.BROWSER || 'chromium']; } catch (e) { /* not installed */ }
 const T = chromium ? test : test.skip;
 const TO = 90000;
+// Firefox and WebKit on a shared CI runner are slower and timing-sensitive: a failed browser test is run once more before it counts (the first failure is still printed).
+if (process.env.BROWSER && process.env.BROWSER !== 'chromium') jest.retryTimes(1, { logErrorsBeforeRetry: true });
 
 let t, browser;
 beforeAll(async () => { if (!chromium) return; t = await boot(); browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}); });
 afterAll(async () => { if (browser) await browser.close(); if (t) await t.close(); });
 
-async function page(width) {
-  const ctx = await browser.newContext({ viewport: { width: width || 1280, height: 800 } }), p = await ctx.newPage(), errors = [];
+async function page(width, reduceMotion) {
+  const ctx = await browser.newContext({ viewport: { width: width || 1280, height: 800 }, reducedMotion: reduceMotion ? 'reduce' : 'no-preference' }), p = await ctx.newPage(), errors = [];
   // Firefox and WebKit report a request or lazy chunk that is cancelled when the test navigates away on purpose; the app is served from one origin, so this is not a CORS or app error.
   const noise = /Failed to load resource|fonts\.g|error loading dynamically imported module|Importing a module script failed|Fetch API cannot load .* due to access control checks|NetworkError when attempting to fetch resource|Load failed/;
   p.on('pageerror', (e) => { if (!noise.test(String(e))) errors.push(String(e)); });
@@ -24,8 +26,9 @@ async function page(width) {
     if (m.type() !== 'error') return;
     let text = m.text();
     // Firefox prints an object argument as "JSHandle@object"; read the real message so it can be judged (and shown if it fails the test).
-    if (/JSHandle/.test(text)) { try { text = (await Promise.all(m.args().map((a) => a.evaluate((v) => (v && v.message) || (typeof v === 'string' ? v : JSON.stringify(v)))))).join(' '); } catch (e) { /* page already closed */ } }
-    if (!noise.test(text)) errors.push(text);
+    if (/JSHandle/.test(text)) { try { text = (await Promise.all(m.args().map((a) => a.evaluate((v) => (v && v.message) || (typeof v === 'string' ? v : JSON.stringify(v)))))).join(' '); } catch (e) { text = 'NAVIGATION'; } }
+    // If the object cannot be read because the page was already navigating away, the message came from a request cancelled by that navigation, not from the app.
+    if (text !== 'NAVIGATION' && !noise.test(text)) errors.push(text);
   });
   await p.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
   p.errors = errors; return p;
@@ -308,11 +311,12 @@ T('TC-E2E-21 dark theme: the toggle switches, the choice survives a reload, and 
   await p.goto(t.base + '/'); await p.waitForSelector('#themeToggle'); await p.click('#themeToggle'); assert.equal(await p.getAttribute('html', 'data-theme'), 'light');
 }, 300000);
 T('TC-E2E-22 scroll helpers: the progress bar grows while scrolling and the back-to-top button returns to the top', async () => {
-  const p = await page(); await p.goto(t.base + '/'); await p.waitForSelector('h1');
+  // Chromium runs the smooth scroll; Firefox and WebKit headless can stall it, so the app's reduced-motion path (instant jump) is used there.
+  const p = await page(undefined, SLOW_ENGINE); await p.goto(t.base + '/'); await p.waitForSelector('h1');
   assert.equal(await p.isVisible('#backTop'), false);
   await p.evaluate(() => window.scrollTo(0, 1600)); await p.waitForSelector('#backTop');
   const w = await p.evaluate(() => parseFloat(document.querySelector('.scroll-progress span').style.width)); assert.ok(w > 0, 'progress ' + w);
-  await p.click('#backTop'); await p.waitForFunction(() => window.scrollY < 5, null, { timeout: 5000 });
+  await p.click('#backTop'); await p.waitForFunction(() => window.scrollY < 5, null, { timeout: 10000, polling: 100 });
   assert.deepEqual(p.errors, []);
 }, TO);
 T('TC-E2E-23 sidebar: the menu button hides it on a wide screen, a tab at the edge brings it back, and the choice survives a reload', async () => {

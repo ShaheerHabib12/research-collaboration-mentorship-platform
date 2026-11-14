@@ -180,4 +180,4 @@ jobs:
           curl -sf http://127.0.0.1:3000/api/health
       - uses: grafana/setup-k6-action@v1
       - name: k6 (50 users; 15 minutes only when the workflow is started by hand)
-        run: k6 run -e BASE_URL=http://localhost:3000 -e K6_DURATION=${{ github.event_name == 'workflow_dispatch' && '15m' || '1m' }} k6/load.js
+        run: k6 run -e BASE_URL=http://localhost:3000 -e LOAD_DURATION=${{ github.event_name == 'workflow_dispatch' && '15m' || '1m' }} k6/load.js

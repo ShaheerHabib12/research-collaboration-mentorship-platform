@@ -39,9 +39,9 @@
   --shadow-2: 0 4px 6px -1px rgba(15,23,42,.06), 0 2px 4px -2px rgba(15,23,42,.04);
   --shadow-3: 0 20px 25px -5px rgba(15,23,42,.1), 0 8px 10px -6px rgba(15,23,42,.05);
   /* Type */
-  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* labels and codes use the body face with tabular figures */
+  --font-display: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* labels and codes use the body face with tabular figures */
   /* Layout */
   --sidebar-w: 260px;
   --topbar-h: 64px;
@@ -731,3 +731,8 @@ p, li { text-wrap: pretty; }
 @media (forced-colors: active) { .btn, .input, .card, .badge { border: 1px solid CanvasText; } }
 /* Animated sections (scroll reveal, floating 3-D shapes, tilt) can poke a few pixels past the screen edge for a moment on a phone; clip that so the page never scrolls sideways */
 main { overflow-x: clip; }
+
+/* ---- Review of the screenshots (alignment and floating buttons) ---- */
+@media (min-width: 721px) { .kpi .k { line-height: 1.2; min-height: 2.4em; } }   /* one- and two-line labels keep the numbers on one row */
+#userBtn { display: inline-flex; align-items: center; gap: 4px; }                /* avatar and arrow sit side by side */
+.shell main#page { padding-bottom: 32px; }                                          /* the last row can scroll clear of the two floating buttons */

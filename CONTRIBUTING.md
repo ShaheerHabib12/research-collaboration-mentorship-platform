@@ -3,7 +3,7 @@
 ## Branching
 - `main` is always releasable: changes arrive only through a pull request that passes CI and has one review. Enforce it with branch protection (GitHub, Settings, Branches, Add rule for `main`).
 - Branch names: `feature/<issue-no>-<short-name>`, `fix/<issue-no>-<short-name>`, `docs/<topic>`.
-- Small, focused commits; message format `area: what changed (#issue)`, e.g. `agreements: reject stale base version (#14)`.
+- Small, focused commits; Conventional Commits format `type(area): what changed (#issue)`, where type is `feat`, `fix`, `test`, `docs`, `refactor` or `chore`, e.g. `fix(agreements): reject stale base version (#14)`. Coursework 1 promised this style; the first commits on `feature/final-website` were written before the rule was restored.
 
 ## Workflow
 1. Open or pick an issue (templates in `.github/ISSUE_TEMPLATE`); label it with the requirement id.
