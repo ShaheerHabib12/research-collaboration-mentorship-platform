@@ -729,3 +729,5 @@ p, li { text-wrap: pretty; }
   .btn, .input, .card { border-width: 2px; }
 }
 @media (forced-colors: active) { .btn, .input, .card, .badge { border: 1px solid CanvasText; } }
+/* Animated sections (scroll reveal, floating 3-D shapes, tilt) can poke a few pixels past the screen edge for a moment on a phone; clip that so the page never scrolls sideways */
+main { overflow-x: clip; }

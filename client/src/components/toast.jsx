@@ -33,7 +33,7 @@ export function ToastHost() {
  * 401 -> back to sign-in (the caller keeps the form data), others -> toast.
  */
 export function fail(err, opts = {}) {
-  if (!(err instanceof ApiError)) { console.error(err); toast('Something unexpected went wrong. Please try again.', 'bad'); return err; }
+  if (!(err instanceof ApiError)) { console.error('Unexpected error: ' + (err && err.message ? err.message : String(err))); toast('Something unexpected went wrong. Please try again.', 'bad'); return err; }
   if (err.status === 401) {
     toast(err.message, 'warn', 'Signed out');
     if (!opts.noRedirect) setTimeout(() => { window.location.href = '/login?expired=1&next=' + encodeURIComponent(window.location.pathname + window.location.search); }, 1400);

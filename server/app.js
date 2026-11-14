@@ -142,6 +142,8 @@ function createApp(o) {
     hsts: o.forceHttps ? { maxAge: 15552000, includeSubDomains: true } : false,
     crossOriginEmbedderPolicy: false
   }));
+  /* Browser features the application never uses are switched off (reported by the OWASP ZAP baseline scan). */
+  app.use((req, res, next) => { res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'); next(); });
   /* NFR-003: in deployed environments plain HTTP is redirected to HTTPS. */
   if (o.forceHttps) app.use((req, res, next) => (req.headers['x-forwarded-proto'] === 'https' ? next() : res.redirect(308, 'https://' + req.headers.host + req.originalUrl)));
 

@@ -35,7 +35,7 @@ test('TC-SEC-03 a student cannot use administrator endpoints and cannot read ano
 test('TC-SEC-04 security headers on the home page and the API (A05)', async () => {
   const h = await t.call('GET', '/'); const csp = h.headers.get('content-security-policy') || '';
   assert.match(csp, /default-src 'self'/); assert.match(csp, /script-src 'self'/); assert.ok(!/unsafe-eval|script-src[^;]*unsafe-inline/.test(csp), 'no unsafe script sources');
-  assert.match(csp, /frame-ancestors 'none'/); assert.equal(h.headers.get('x-content-type-options'), 'nosniff');
+  assert.match(csp, /frame-ancestors 'none'/); assert.equal(h.headers.get('x-content-type-options'), 'nosniff'); assert.match(h.headers.get('permissions-policy') || '', /camera=\(\), microphone=\(\), geolocation=\(\)/);
   const a = await t.call('GET', '/api/health'); assert.ok(!a.headers.get('x-powered-by'), 'framework banner hidden');
   const d = await t.call('GET', '/api/dashboard', undefined, await t.as('aisha')); assert.match(d.headers.get('cache-control') || '', /no-store/);
 });
