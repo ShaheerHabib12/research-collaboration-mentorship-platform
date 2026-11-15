@@ -1,8 +1,8 @@
 'use strict';
-/** Team contribution B tests. TEAM: when your function is ready, change `describe.skip` to `describe` on the next line. */
+/** Team contribution B tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
 const assert = require('node:assert/strict');
 const { matchScore } = require('../../shared/contrib/match');
-const suite = describe.skip;
+const suite = describe;
 
 suite('TC-CB: matchScore (team contribution B)', () => {
   test('TC-CB-01 the same skills and tags score 100', () => {

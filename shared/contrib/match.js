@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Team contribution B - matchScore(skills, tags)
- * Owner: _____________________ (write your name and student number here)
+ * Owner: Rana Muhammad Sami Noon (Up2601149)
  * Used for: ranking projects on the Discover page by how well they fit a person's skills.
  *
  * Rules (the tests in tests/contrib/match.test.js check every one):
@@ -11,9 +11,19 @@
  *  4. If there are no items at all, or either input is not an array, the score is 0.
  *  5. The result is a whole number from 0 to 100.
  */
+const clean = (a) => new Set(
+  Array.isArray(a)
+    ? a.filter((x) => typeof x === 'string').map((x) => x.trim().toLowerCase()).filter(Boolean)
+    : []
+);
 function matchScore(skills, tags) {
-  // TODO (member B): write your code here, then follow docs/CONTRIBUTING_STEPS.md.
-  throw new Error('matchScore is not written yet');
+  if (!Array.isArray(skills) || !Array.isArray(tags)) return 0;
+  const a = clean(skills);
+  const b = clean(tags);
+  const all = new Set([...a, ...b]);
+  if (!all.size) return 0;
+  let shared = 0;
+  for (const x of a) if (b.has(x)) shared++;
+  return Math.round((100 * shared) / all.size);
 }
-
 module.exports = { matchScore };
