@@ -227,7 +227,7 @@ legend { padding: 0; font: 500 .875rem/1.25rem var(--font-body); color: var(--na
 .main { margin-left: var(--sidebar-w); min-width: 0; }
 .topbar {
   position: sticky; top: 0; z-index: 50; height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 var(--pad, 3rem);
-  background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
 }
 .topbar .search { flex: 1; max-width: 460px; }
 .topbar .search .input { background: var(--subtle); border-color: transparent; }
@@ -667,14 +667,16 @@ label a, .check a, .checkbox a { text-decoration: underline; text-underline-offs
 /* ---- Dark theme: the variables change, the components follow ---- */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --primary: #60a5fa; --primary-strong: #93c5fd; --primary-deep: #bfdbfe; --primary-tint: #172554; --primary-tint-2: #1e3a8a; --focus: #60a5fa;
-  --navy: #e2e8f0; --navy-2: #cbd5e1;
-  --teal: #2dd4bf; --teal-strong: #5eead4; --teal-tint: #042f2e; --teal-tint-2: #115e59;
-  --amber: #fbbf24; --amber-strong: #fcd34d; --amber-tint: #422006;
-  --danger: #f87171; --danger-tint: #450a0a;
-  --bg: #0b1220; --surface: #111a2e; --subtle: #162036; --border: #243049; --border-strong: #33415c;
-  --text: #f1f5f9; --text-2: #cbd5e1; --text-3: #aab6c8;
+  --primary: #6ea8fe; --primary-strong: #9ec5fe; --primary-deep: #c5dcff; --primary-tint: #14233f; --primary-tint-2: #1e3a6e; --focus: #6ea8fe;
+  --navy: #e6edf3; --navy-2: #c3cedb;
+  --teal: #3fd5c0; --teal-strong: #7ee8d8; --teal-tint: #0a2f2c; --teal-tint-2: #145a54;
+  --amber: #f2b84b; --amber-strong: #f8d27a; --amber-tint: #3a2a0a;
+  --danger: #f4807a; --danger-tint: #3f1414;
+  --bg: #0d1117; --surface: #161b22; --subtle: #1c2330; --border: #2b3445; --border-strong: #3b4659;
+  --text: #e6edf3; --text-2: #b9c4d2; --text-3: #8f9cae;
 }
+:root[data-theme="dark"] .card, :root[data-theme="dark"] .kpi { box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 6px 18px rgba(0,0,0,.28); }
+:root[data-theme="dark"] .sidebar { background: #10151c; }
 :root[data-theme="dark"] body { background: var(--bg); color: var(--text); }
 :root[data-theme="dark"] .btn.primary { color: #0b1220; }
 :root[data-theme="dark"] .pub-nav { background: rgba(11,18,32,.92); }
@@ -736,3 +738,13 @@ main { overflow-x: clip; }
 @media (min-width: 721px) { .kpi .k { line-height: 1.2; min-height: 2.4em; } }   /* one- and two-line labels keep the numbers on one row */
 #userBtn { display: inline-flex; align-items: center; gap: 4px; }                /* avatar and arrow sit side by side */
 .shell main#page { padding-bottom: 32px; }                                          /* the last row can scroll clear of the two floating buttons */
+
+/* ---- Menu button sits beside the logo when the sidebar is open (desktop); the top-bar copy shows only when the sidebar is hidden or on small screens ---- */
+.brand-row { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding-right: 10px; }
+.brand-row .brand { flex: 1; min-width: 0; border-bottom: 0; }
+.side-menu-btn { display: none; flex: none; }
+@media (min-width: 1025px) {
+  .side-menu-btn { display: grid; }
+  .shell:not(.side-hidden) .topbar .menu-btn { display: none; }
+}
+@media (max-width: 1024px) { .side-menu-btn { display: none; } }

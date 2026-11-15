@@ -35,14 +35,17 @@ export const ROLE_LABEL = { student: 'Student', researcher: 'Researcher', mentor
 const PARENT = { 'project-new': 'projects', project: 'projects', workspace: 'projects', agreement: 'projects', 'profile-view': 'discover' };
 const isHere = (id, path) => { const seg = path.split('/')[1] || ''; return (PARENT[seg] || seg) === id; };
 
-function Sidebar({ me, open, onNavigate }) {
+function Sidebar({ me, open, onNavigate, onMenu }) {
   const c = useCounts(), loc = useLocation();
   return (
     <aside className={'sidebar' + (open ? ' open' : '')} id="sidebar" aria-label="Main navigation">
-      <Link className="brand" to="/dashboard" onClick={onNavigate}>
-        <span className="brand-mark"><img src="/assets/img/logo-mark.svg" alt="" width="34" height="34" /></span>
-        <span><span className="brand-name">RCMP</span><br /><span className="brand-sub">Research &amp; Mentorship</span></span>
-      </Link>
+      <div className="brand-row">
+        <Link className="brand" to="/dashboard" onClick={onNavigate}>
+          <span className="brand-mark"><img src="/assets/img/logo-mark.svg" alt="" width="34" height="34" /></span>
+          <span><span className="brand-name">RCMP</span><br /><span className="brand-sub">Research &amp; Mentorship</span></span>
+        </Link>
+        <button type="button" className="icon-btn side-menu-btn" id="sideMenuBtn" aria-label="Hide the sidebar" title="Hide the sidebar" aria-controls="sidebar" onClick={onMenu}><Icon name="menu" /></button>
+      </div>
       <nav className="nav" aria-label="Primary">
         {NAV.map((g) => {
           const items = g.items.filter((i) => i.roles === '*' || i.roles.includes(me.role));
@@ -163,7 +166,7 @@ export function AppShell() {
     <>
       <a className="skip-link" href="#page">Skip to main content</a>
       <div className={'shell' + (hidden ? ' side-hidden' : '')}>
-        <Sidebar me={me} open={open} onNavigate={() => setOpen(false)} />
+        <Sidebar me={me} open={open} onNavigate={() => setOpen(false)} onMenu={toggleMenu} />
         <div className="main">
           <Topbar me={me} onMenu={toggleMenu} menuOpen={open} hidden={hidden} />
           <main id="page" tabIndex={-1} ref={main}><Outlet /></main>
