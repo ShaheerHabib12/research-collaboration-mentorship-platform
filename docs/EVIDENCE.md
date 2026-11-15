@@ -24,7 +24,8 @@ Each run shows the job list, the log of every test and a summary with the run li
 | 14 Nov 2026 | `c6654e9` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43637039995 | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43637044876 | Main job, Cypress, k6 (50 users) and Firefox green. WebKit push run failed (page heading wait of 8 s), ZAP warned "Base64 Disclosure" on the bundled font stylesheet |
 | 15 Nov 2026 | `1d0729f` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43640454744 | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43640459894 | Pull-request run all green. Push run green except Cypress (one width check on `/notifications` at 1280 px, 15 px too wide while the page settled). Firefox, WebKit, k6 (p95 10.1 ms) and ZAP (0 FAIL, 0 WARN, 66 PASS) passed; 24 contribution tests skipped. Cypress job: https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43640454744/job/132586676778 |
 | 15 Nov 2026 | `f1b2b17` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43692612215 | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43692618955 | Push run fully green (6 of 6 jobs; k6 p95 27 ms; ZAP 0 FAIL, 0 WARN, 66 PASS). Pull-request run green except WebKit TC-E2E-10 (300 s timeout on a slow runner): https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43692618955/job/132746241888 |
-| 15 Nov 2026 | next commit | paste link here | paste link here | Fix: each axe run capped at 60 s and tried twice; WebKit and Firefox test limit 900 s; route named in the error |
+| 15 Nov 2026 | `109ec2c` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43696013972 | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43696017013 | **All 12 checks green** on both runs (k6 p95 11.3 ms; ZAP 0 FAIL, 0 WARN, 66 PASS; WebKit and Firefox passed). This is the run to cite as the green run |
+| 15 Nov 2026 | next commit | paste link here | paste link here | Adds piece D and the member guides; expected green. Fill after the run |
 
 The two failing jobs of the `c6654e9` push run, for the record:
 WebKit https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43637039995/job/132575997244
@@ -38,13 +39,14 @@ gh run list --branch feature/final-website --limit 4 --json url,conclusion,event
 
 ## 3. Team contributions
 
-Each member's piece is a function with ready-made tests (see `docs/CONTRIBUTING_STEPS.md`). Fill a row when the piece is merged.
+Each member's piece (A, B, C, D) is a function with ready-made tests (see `docs/CONTRIBUTING_STEPS.md`). Fill a row when the piece is merged.
 
 | Piece | Member | GitHub name | Pull request | Commits by this member | Who wrote the file (blame) |
 |-------|--------|-------------|--------------|------------------------|----------------------------|
 | A `normaliseTags` | Muhammad Rameel Khan (Up2601145) | _to fill_ | _to fill_ | `.../commits/feature/final-website?author=GITHUB_NAME` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/blame/feature/final-website/shared/contrib/tags.js |
 | B `matchScore` | Rana Muhammad Sami Noon (Up2601149) | _to fill_ | _to fill_ | `.../commits/feature/final-website?author=GITHUB_NAME` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/blame/feature/final-website/shared/contrib/match.js |
 | C `relativeTime` | Ahmad Riaz (Up2601151) | _to fill_ | _to fill_ | `.../commits/feature/final-website?author=GITHUB_NAME` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/blame/feature/final-website/shared/contrib/relativeTime.js |
+| D `formatFileSize` | Hafiz Muhammad Abu Hurraira (Up2601139) | _to fill_ | _to fill_ | `.../commits/feature/final-website?author=GITHUB_NAME` | https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/blame/feature/final-website/shared/contrib/fileSize.js |
 
 Contributors graph: https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/graphs/contributors
 

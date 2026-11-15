@@ -170,7 +170,7 @@ Details, the Coursework 1 to Coursework 2 changes and the rationale are in [`doc
 │   ├── db.js  pool.js        schema, migrations, Unit of Work, pg pool
 │   ├── auth.js  storage.js  assistant.js  mailer.js  seed.js  backup.js
 ├── shared/                   validators.js, rules.js, constants.js - used by browser and server
-│   └── contrib/              three team pieces (tags, match, relativeTime); tests in tests/contrib
+│   └── contrib/              four team pieces (tags, match, relativeTime, fileSize); tests in tests/contrib
 ├── tests/                    Jest suites (unit, property, db, API, security, contract, smoke, assistant), tests/e2e (Playwright + axe), load.js
 ├── stryker.config.json       mutation testing of the shared rules
 ├── cypress/  cypress.config.js   Cypress specs (UC-02, UC-04, NFR-011/013)
@@ -261,7 +261,7 @@ Copy [`.env.example`](.env.example) and set the variables in your environment. T
 | `npm run k6` | k6 load test: 50 users for 15 minutes (needs k6 installed) |
 | `npm run coverage` | Full suite with the coverage gate (lines ≥ 90 %, functions ≥ 85 %) |
 | `npm run report` | Write `docs/evidence/TEST_REPORT.txt` and `COVERAGE_REPORT.txt` |
-| `npm run contrib` | Run the 24 team contribution tests (skipped until each member turns theirs on; `docs/CONTRIBUTING_STEPS.md`) |
+| `npm run contrib` | Run the 32 team contribution tests (skipped until each member turns theirs on; `docs/CONTRIBUTING_STEPS.md`) |
 | `npm run load` | Node load smoke test: 50 concurrent users, 2,000 requests, p95 must stay under 2 s |
 | `npm run backup` | `pg_dump` with a checksummed manifest |
 | `npm run lint` | ESLint over server, shared, tests, client, Cypress and k6 |
@@ -320,7 +320,7 @@ Stated plainly so nobody is surprised:
 - The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
 - Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
 - TLS is provided by the host or reverse proxy, not by the Node process.
-- Docker and the 15-minute k6 run were not executed in the build sandbox. GitHub Actions ran on 14 and 15 November 2026 (links in `docs/EVIDENCE.md`). Latest completed run (commit `f1b2b17`): the push run was fully green (all 224 tests, coverage and mutation gates, Cypress, Firefox, WebKit, k6 with 50 users and p95 27 ms, ZAP with 0 FAIL, 0 WARN, 66 PASS). On the pull-request run only WebKit failed: the accessibility test (TC-E2E-10) passed on the push run and on the earlier runs but ran past its 300-second limit on a slow runner. Each axe run is now capped at 60 s and tried twice, the test limit on Firefox and WebKit is 900 s, and the error names the route if one stalls. A new run is pending. See `docs/TEST_PLAN.md`.
+- Docker and the 15-minute k6 run were not executed in the build sandbox. GitHub Actions ran on 14 and 15 November 2026 (links in `docs/EVIDENCE.md`). **Latest completed run (commit `109ec2c`): all 12 checks green on both the push run and the pull-request run**: main job (lint, build, audit, all 224 tests, coverage and mutation gates, load smoke test), Cypress, Firefox, WebKit, k6 (50 users, 1 minute, p95 11.3 ms) and ZAP (0 FAIL, 0 WARN, 66 PASS, 5 ignored). Earlier failures and their fixes (Firefox console objects, WebKit scroll, WebKit heading wait, ZAP base64 false alarm, Cypress width timing, WebKit axe time limit, k6 user count) are listed in `docs/TEST_PLAN.md`.
 - No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
 ## 15. Team

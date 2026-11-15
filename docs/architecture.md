@@ -39,7 +39,7 @@ The system follows the Coursework 1 design: a **closed three-layer modular monol
 
 **Single-page client.** Express serves `client/dist` and falls back to `index.html` for client routes. A 301 redirect maps legacy `/page.html` links (kept in seed data, notifications and e-mails) to the clean routes (`/page`).
 
-**Shared rules.** `shared/validators.js`, `rules.js` and `constants.js` are loaded by both the browser (instant feedback) and the server (authority). The server never trusts the browser: every limit is re-checked, and the database repeats the most important ones as `CHECK`/`UNIQUE` constraints. `shared/contrib/` holds three small pure functions (`normaliseTags`, `matchScore`, `relativeTime`) written by team members; they are not called by the app yet and have their own tests in `tests/contrib` (`docs/CONTRIBUTING_STEPS.md`).
+**Shared rules.** `shared/validators.js`, `rules.js` and `constants.js` are loaded by both the browser (instant feedback) and the server (authority). The server never trusts the browser: every limit is re-checked, and the database repeats the most important ones as `CHECK`/`UNIQUE` constraints. `shared/contrib/` holds four small pure functions (`normaliseTags`, `matchScore`, `relativeTime`, `formatFileSize`) written by team members; they are not called by the app yet and have their own tests in `tests/contrib` (`docs/CONTRIBUTING_STEPS.md`).
 
 ## Changes from the Coursework 1 design (for report section 3.2)
 

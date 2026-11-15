@@ -1,6 +1,6 @@
 # How a team member adds their code (step by step)
 
-Three small pieces of code are waiting in the project. Each one has a file for the code and a file of ready-made tests.
+Four small pieces of code are waiting in the project. Each one has a file for the code and a file of ready-made tests.
 Your job: write the code so the tests pass, then send it to GitHub under your own name. Your lecturer can then see
 your work on the project page.
 
@@ -9,6 +9,7 @@ your work on the project page.
 | A | Muhammad Rameel Khan (Up2601145) | `shared/contrib/tags.js` | `tests/contrib/tags.test.js` (8 tests) | Cleans the tags on a project: trim, lower case, no duplicates, at most 8 |
 | B | Rana Muhammad Sami Noon (Up2601149) | `shared/contrib/match.js` | `tests/contrib/match.test.js` (8 tests) | Scores 0 to 100 how well a person's skills fit a project's tags |
 | C | Ahmad Riaz (Up2601151) | `shared/contrib/relativeTime.js` | `tests/contrib/relativeTime.test.js` (8 tests) | Turns a date into "2 hours ago", "yesterday" and so on |
+| D | Hafiz Muhammad Abu Hurraira (Up2601139) | `shared/contrib/fileSize.js` | `tests/contrib/fileSize.test.js` (8 tests) | Turns a file size in bytes into "1.5 MB" |
 
 The names are a suggestion. Swap them if the team agrees on something else. Do not take a piece that is not yours.
 
@@ -101,7 +102,7 @@ The contributors graph is here: `https://github.com/ShaheerHabib12/research-coll
 
 Do these in one commit, so code and documents stay the same:
 
-1. In `package.json`, remove `"<rootDir>/tests/contrib/"` from `testPathIgnorePatterns` and `"!shared/contrib/**"` from `collectCoverageFrom`. The 24 tests now run in `npm test` and their code counts in the coverage figure.
+1. In `package.json`, remove `"<rootDir>/tests/contrib/"` from `testPathIgnorePatterns` and `"!shared/contrib/**"` from `collectCoverageFrom`. The 32 tests now run in `npm test` and their code counts in the coverage figure.
 2. Run `npm run report` and `npm run docs`.
 3. Update the test totals in `README.md`, `docs/TEST_PLAN.md`, the report and the guide (search for `224`).
 4. Fill the status table in `docs/EVIDENCE.md` with the real links.
