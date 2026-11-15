@@ -1,8 +1,8 @@
 'use strict';
-/** Team contribution A tests. TEAM: when your function is ready, change `describe.skip` to `describe` on the next line. */
+/** Team contribution A tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
 const assert = require('node:assert/strict');
 const { normaliseTags } = require('../../shared/contrib/tags');
-const suite = describe.skip;
+const suite = describe;
 
 suite('TC-CA: normaliseTags (team contribution A)', () => {
   test('TC-CA-01 trims and lower-cases every tag', () => {
