@@ -1,8 +1,8 @@
 'use strict';
-/** Team contribution C tests. TEAM: when your function is ready, change `describe.skip` to `describe` on the next line. */
+/** Team contribution C tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
 const assert = require('node:assert/strict');
 const { relativeTime } = require('../../shared/contrib/relativeTime');
-const suite = describe.skip;
+const suite = describe;
 
 const NOW = new Date('2026-11-15T12:00:00Z');
 const ago = (seconds) => new Date(NOW.getTime() - seconds * 1000);
