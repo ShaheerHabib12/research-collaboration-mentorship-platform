@@ -142,6 +142,20 @@ const ADMIN_ROUTES = ['/admin', '/compensation'];
 const AXE_PUBLIC = SLOW_ENGINE ? ['/', '/pricing', '/contact', '/login'] : PUBLIC_ROUTES;
 const AXE_USER = SLOW_ENGINE ? ['/dashboard', '/discover', '/workspace?id=PRJ-1001', '/subscription', '/profile'] : USER_ROUTES;
 const AXE_ADMIN = SLOW_ENGINE ? ['/admin'] : ADMIN_ROUTES;
+/** One axe run for one route. A slow engine can stall a single run for minutes, so each run is capped at 60 s and tried twice; the route name is in the error if both stall. */
+async function axeOnce(AxeBuilder, p, route) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await open(p, route); await settle(p);
+      let timer;
+      const cap = new Promise((_, no) => { timer = setTimeout(() => no(new Error('axe stalled on ' + route)), 60000); });
+      try { return await Promise.race([new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze(), cap]); }
+      finally { clearTimeout(timer); }
+    } catch (e) {
+      if (attempt === 2) throw new Error(route + ': ' + e.message, { cause: e });
+    }
+  }
+}
 T('TC-E2E-10 accessibility on every route: axe-core finds no serious or critical violations at 360, 768 and 1280 px (NFR-013)', async () => {
   const AxeBuilder = require('@axe-core/playwright').default || require('@axe-core/playwright').AxeBuilder;
   const problems = [];
@@ -149,14 +163,13 @@ T('TC-E2E-10 accessibility on every route: axe-core finds no serious or critical
     const anon = await page(w), user = await page(w), admin = await page(w); await signIn(user, 'aisha@port.ac.uk'); await signIn(admin, 'admin@rcmp.example');
     for (const [p, routes] of [[anon, AXE_PUBLIC], [user, AXE_USER], [admin, AXE_ADMIN]]) {
       for (const r of routes) {
-        await open(p, r); await settle(p);
-        const res = await new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+        const res = await axeOnce(AxeBuilder, p, r);
         for (const v of res.violations.filter((x) => ['serious', 'critical'].includes(x.impact))) problems.push(w + 'px ' + r + ': ' + v.id + ' (' + v.nodes.length + ') ' + v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | '));
       }
     }
   }
   assert.deepEqual(problems, []);
-}, 300000);
+}, SLOW_ENGINE ? 900000 : 300000);
 T('TC-E2E-10b structure on every route: language, title, exactly one h1, labelled controls, named buttons and links, image alt', async () => {
   const anon = await page(), user = await page(), admin = await page(); await signIn(user, 'aisha@port.ac.uk'); await signIn(admin, 'admin@rcmp.example'); const problems = [];
   for (const [p, routes] of [[anon, PUBLIC_ROUTES], [user, USER_ROUTES], [admin, ADMIN_ROUTES]]) {
