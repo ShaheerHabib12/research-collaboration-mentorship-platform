@@ -338,13 +338,13 @@ T('TC-E2E-22 scroll helpers: the progress bar grows while scrolling and the back
   await p.click('#backTop'); await p.waitForFunction(() => window.scrollY < 5, null, { timeout: 10000, polling: 100 });
   assert.deepEqual(p.errors, []);
 }, TO);
-T('TC-E2E-23 sidebar: the menu button hides it on a wide screen, a tab at the edge brings it back, and the choice survives a reload', async () => {
+T('TC-E2E-23 sidebar: the menu button beside the logo hides it on a wide screen, a tab at the edge brings it back, and the choice survives a reload', async () => {
   const p = await page(1280); await signIn(p, 'aisha@port.ac.uk'); await p.waitForSelector('#sidebar');
   const still = '.sidebar,.main,.footer{transition:none!important}';   // test the final position, not the 0.2 s slide (headless WebKit and Firefox can pause animations)
   await addRule(p, still);
   const left = () => p.evaluate(() => Math.round(document.getElementById('sidebar').getBoundingClientRect().right));
   assert.ok((await left()) > 100, 'sidebar visible at first');
-  await p.click('#menuBtn'); await p.waitForSelector('.shell.side-hidden', { timeout: 10000 }); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right <= 1, null, { timeout: 10000, polling: 100 });
+  await p.click('#sideMenuBtn'); await p.waitForSelector('.shell.side-hidden', { timeout: 10000 }); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right <= 1, null, { timeout: 10000, polling: 100 });
   assert.ok(await p.isVisible('.side-edge'));
   assert.equal(await p.evaluate(() => Math.round(document.querySelector('.main').getBoundingClientRect().left)), 0, 'content uses the full width');
   await p.reload(); await p.waitForSelector('.side-edge'); await addRule(p, still); await p.waitForFunction(() => document.getElementById('sidebar').getBoundingClientRect().right <= 1, null, { timeout: 10000, polling: 100 }); assert.ok((await left()) <= 0, 'still hidden after reload');
