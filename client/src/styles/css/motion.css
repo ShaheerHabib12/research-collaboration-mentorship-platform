@@ -1,0 +1,106 @@
+/* ==========================================================================
+   RCMP motion layer. Loaded after styles.css. Principles:
+   - motion explains change (a page arrived, a card moved, a value updated),
+     it is never decoration that delays the user;
+   - everything is 150-450 ms, uses transform/opacity only, and stops under
+     prefers-reduced-motion;
+   - nothing here is required for the app to work.
+   ========================================================================== */
+:root { --ease-out: cubic-bezier(.22, .8, .24, 1); --ease-spring: cubic-bezier(.34, 1.4, .64, 1); }
+
+/* Page-to-page: the browser cross-fades only the content; the sidebar and top bar stay put
+   (View Transitions API, Chromium / Safari 18; other browsers simply navigate normally). */
+@view-transition { navigation: auto; }
+.sidebar { view-transition-name: rcmp-sidebar; }
+.topbar { view-transition-name: rcmp-topbar; }
+::view-transition-old(root) { animation: 140ms var(--ease-out) both vt-out; }
+::view-transition-new(root) { animation: 260ms var(--ease-out) both vt-in; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+
+/* Content arrives in a short, staggered rise. Runs whenever the element is inserted, so it also
+   covers cards that appear after data loads. */
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+.content .card, .content .kpi, .content .task, .content .col, .content .notice, .content .item { animation: rise .42s var(--ease-out) both; }
+.grid > :nth-child(2), .col:nth-child(2) { animation-delay: 50ms; }
+.grid > :nth-child(3), .col:nth-child(3) { animation-delay: 100ms; }
+.grid > :nth-child(4), .col:nth-child(4) { animation-delay: 150ms; }
+.grid > :nth-child(n+5) { animation-delay: 200ms; }
+.col .task:nth-child(n+3) { animation-delay: 60ms; }
+
+/* Feedback on interactive things */
+.btn, .card.kpi, a.card, .task, .tab, .nav a { transition: background-color .15s, border-color .15s, box-shadow .2s, transform .2s var(--ease-out), color .15s; }
+.btn:active:not([disabled]) { transform: scale(.97); }
+a.card:hover, a.kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: var(--border-strong); }
+.task { cursor: grab; }
+.task:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+.task.dragging { cursor: grabbing; transform: rotate(1.5deg) scale(1.02); box-shadow: var(--shadow-3); opacity: .85; }
+.task.landed { animation: landed .5s var(--ease-spring); }
+@keyframes landed { 0% { transform: scale(.94); box-shadow: 0 0 0 0 rgba(37,99,235,.35); } 60% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } 100% { transform: none; } }
+.col { transition: background-color .2s, outline-color .2s; }
+
+/* Values that change: progress bars fill, counters are tabular so digits do not jitter */
+.progress > i { animation: fill .9s var(--ease-out) both; }
+@keyframes fill { from { width: 0; } }
+.kpi .v, .proof b, .badge, .counter { font-variant-numeric: tabular-nums; }
+
+/* Notification badge pulses once when the count changes */
+.pulse-once { animation: pulse-once .6s var(--ease-spring); }
+@keyframes pulse-once { 40% { transform: scale(1.35); } }
+
+/* Toasts and dialogs already animate in styles.css; add a leaving state used by ui.js */
+.toast { animation: toast-in .35s var(--ease-spring) both; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(24px) scale(.98); } }
+.toast.leaving { animation: toast-out .2s ease-in both; }
+@keyframes toast-out { to { opacity: 0; transform: translateX(16px); } }
+
+/* Landing page: scroll reveal (class added by motion.js only, so no-JS visitors see everything) */
+.js-reveal { opacity: 0; transform: perspective(900px) rotateX(9deg) translateY(22px); transform-origin: 50% 100%; transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); transition-delay: var(--d, 0ms); }
+.js-reveal.in { opacity: 1; transform: none; }
+.site-header.scrolled, .topnav.scrolled { box-shadow: 0 1px 0 var(--border), 0 8px 24px -16px rgba(15,23,42,.25); }
+
+/* Hero: calm collaboration network behind the headline, product card that follows the pointer */
+.hero { position: relative; isolation: isolate; }
+.hero-net { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; opacity: .6; pointer-events: none; mask-image: linear-gradient(180deg, #000 55%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%); }
+.hero .mock { transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) rotate(1.2deg); transition: transform .25s var(--ease-out); will-change: transform; animation: float 7s ease-in-out infinite; }
+@keyframes float { 50% { translate: 0 -6px; } }
+.hero .proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; max-width: 560px; }
+.hero .proof span { display: block; line-height: 1.35; margin-top: 6px; }
+.hero .proof > div { border-left: 2px solid var(--primary-tint-2); padding-left: 14px; }
+.hero h1 em { background: linear-gradient(90deg, var(--primary), #4f46e5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Keep floating helpers from covering the last row of content */
+.content { padding-bottom: 96px; }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .js-reveal { opacity: 1; transform: none; }
+  .hero .mock { animation: none; }
+}
+@media (max-width: 720px) { .hero .proof { grid-template-columns: 1fr; gap: 14px; } }
+
+/* ---- Extra 3-D depth (all effects switch off for reduced motion) ---- */
+.hero .stage .float3d { transform: translate3d(calc(var(--px, 0) * var(--depth, 14px)), calc(var(--py, 0) * var(--depth, 14px)), 60px); }
+.hero .float3d.f1 { --depth: -22px; } .hero .float3d.f2 { --depth: 26px; } .hero .float3d.f3 { --depth: -14px; }
+#features .card, #roles .card { transform-style: preserve-3d; }
+#features .card .ic, #roles .card .ic { transform: translateZ(34px); transition: transform .3s var(--ease-out); }
+#features .card h3, #roles .card h3 { transform: translateZ(18px); }
+.card.is-tilting { box-shadow: 0 30px 50px -28px rgba(15,23,42,.38), 0 8px 18px -10px rgba(37,99,235,.28); }
+.plan { transform-style: preserve-3d; transition: transform .25s var(--ease-out), box-shadow .25s; }
+
+.stack-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 40px; align-items: center; }
+.stack3d { --sry: -28deg; --srx: 58deg; position: relative; height: 340px; perspective: 1100px; cursor: grab; touch-action: pan-y; outline-offset: 6px; border-radius: 16px; }
+.stack3d:active { cursor: grabbing; }
+.stack3d .slab { position: absolute; left: 50%; top: 50%; width: 300px; height: 150px; margin: -75px 0 0 -150px; border-radius: 14px; display: flex; flex-direction: column; justify-content: center; padding: 0 22px; color: #fff; box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 28px 40px -22px rgba(15,23,42,.55); transform-style: preserve-3d; }
+.stack3d .slab b { font: 700 1.05rem/1.2 var(--font-display, inherit); } .stack3d .slab small { opacity: .9; margin-top: 4px; font-size: .78rem; }
+.stack3d { transform-style: preserve-3d; }
+.stack3d .slab { transform: rotateX(var(--srx)) rotateZ(var(--sry)) translateZ(var(--z)); }
+.stack3d .s1 { --z: 78px; background: linear-gradient(135deg, #1d4ed8, #4f46e5); }
+.stack3d .s2 { --z: 0px; background: linear-gradient(135deg, #0f766e, #0d9488); }
+.stack3d .s3 { --z: -78px; background: linear-gradient(135deg, #0f172a, #334155); }
+@media (max-width: 860px) { .stack-wrap { grid-template-columns: 1fr; } .stack3d { height: 300px; } .stack3d .slab { width: 250px; margin-left: -125px; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero .stage .float3d { transform: none; }
+  #features .card .ic, #roles .card .ic, #features .card h3, #roles .card h3 { transform: none; }
+}

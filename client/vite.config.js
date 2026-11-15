@@ -1,16 +1,21 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// The shared UMD files (/shared) are written for both Node and the browser. Vite would treat them as
+// CommonJS; this plugin makes them attach to `window` (RCMPConstants / RCMPValidators / RCMPRules) instead.
+const sharedUmd = () => ({
+  name: 'rcmp-shared-umd',
+  enforce: 'pre',
+  transform(code, id) {
+    if (!/[\\/]shared[\\/](constants|validators|rules)\.js$/.test(id)) return null;
+    return { code: code.replace("typeof module === 'object' && module.exports", 'false').replace("typeof self !== 'undefined' ? self : this", 'window'), map: null };
+  }
+});
+
+// The API (Express) runs on :3000; during `npm run dev` Vite proxies /api to it.
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    // Forward API calls to the Express server during development.
-    proxy: { '/api': 'http://localhost:3000' },
-  },
-  test: {
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.js',
-    globals: true,
-  },
+  plugins: [sharedUmd(), react()],
+  server: { port: 5173, proxy: { '/api': 'http://localhost:3000' }, fs: { allow: ['..'] } },
+  // assetsInlineLimit 0: small font files stay real files. An inlined data: font would be blocked by the Content-Security-Policy (font-src 'self').
+  build: { outDir: 'dist', emptyOutDir: true, sourcemap: false, assetsInlineLimit: 0 }
 });

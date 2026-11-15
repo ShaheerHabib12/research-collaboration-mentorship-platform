@@ -1,46 +1,17 @@
-# Contributing
+# Contributing (Team 02)
 
-These rules keep the repository traceable to the requirements in the coursework report.
+## Branching
+- `main` is always releasable: changes arrive only through a pull request that passes CI and has one review. Enforce it with branch protection (GitHub, Settings, Branches, Add rule for `main`).
+- Branch names: `feature/<issue-no>-<short-name>`, `fix/<issue-no>-<short-name>`, `docs/<topic>`.
+- Small, focused commits; Conventional Commits format `type(area): what changed (#issue)`, where type is `feat`, `fix`, `test`, `docs`, `refactor` or `chore`, e.g. `fix(agreements): reject stale base version (#14)`. Coursework 1 promised this style; the first commits on `feature/final-website` were written before the rule was restored.
 
-## Branches
+## Workflow
+1. Open or pick an issue (templates in `.github/ISSUE_TEMPLATE`); label it with the requirement id.
+2. Create a branch from `main`, write the test case first (see `docs/TEST_PLAN.md`), then the code.
+3. `npm test` and `npm run coverage` locally. Tests need PostgreSQL: `docker compose up -d db` then `export TEST_DATABASE_URL=postgres://rcmp:rcmp@localhost:5432/postgres`.
+4. Open a pull request using the template; GitHub Actions runs unit tests, the full suite with a coverage gate, and the load test.
+5. Squash-merge after review (the commit stays under the name of the person who opened the pull request); delete the branch.
+6. Team code pieces (tags, match, relativeTime, fileSize) follow the steps in `docs/CONTRIBUTING_STEPS.md`; proof links go in `docs/EVIDENCE.md`.
 
-- `main` is always working. Nobody pushes to it directly.
-- Create a branch for every change, named by type:
-  - `feature/<short-name>` for new functionality, for example `feature/uc01-create-project`
-  - `fix/<short-name>` for bug fixes
-  - `docs/<short-name>` for documentation only
-
-## Commits
-
-Use conventional commit messages and mention the requirement ID where there is one:
-
-```
-feat(c4): create project brief endpoint (FR-007)
-fix(c2): reject expired JWT with 401 (NFR-001)
-docs: update architecture notes
-test(c6): add 403 case for non-member upload (UC-04)
-chore: bump dependencies
-```
-
-Types: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`.
-
-## Pull requests
-
-1. Push your branch and open a pull request into `main` using the template.
-2. CI must pass (lint, tests, client build).
-3. At least one team member who is not the author reviews and approves.
-4. Squash or merge only when the checklist in the template is complete.
-
-## Issues and planning
-
-- One issue per user story or defect. Use the issue templates and put the requirement IDs (UR, FR, NFR, UC) in the form.
-- Labels: area (`client`, `server`, `database`, `docs`, `ci`) and MoSCoW priority (`must`, `should`, `could`, `wont`).
-- Milestones: `Iteration 1`, `Iteration 2`.
-- Project board columns: Backlog, In Progress, In Review, Done.
-
-## Code rules
-
-- Never commit `.env`, keys or uploaded files. Use `.env.example` for new settings.
-- Database access uses parameterised queries only.
-- Every endpoint that changes data has a test for success and for the main failure cases in the matching use case.
-- Run `npm run lint` and `npm test` in the folder you changed before pushing.
+## Code style
+Plain JavaScript, no build step, no runtime dependencies. Public functions get a doc comment that names the requirement they implement. Never put secrets in the repository.

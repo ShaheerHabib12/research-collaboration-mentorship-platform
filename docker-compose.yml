@@ -1,17 +1,21 @@
-# Local PostgreSQL for development only. Start with: docker compose up -d
+# docker compose up --build   ->  http://localhost:3000   (PostgreSQL 16 + the Express/React application)
+# Replace the example secrets before any real deployment (see .env.example).
 services:
   db:
     image: postgres:16
-    restart: unless-stopped
+    environment: { POSTGRES_USER: rcmp, POSTGRES_PASSWORD: rcmp, POSTGRES_DB: rcmp }
+    ports: ['5432:5432']
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ['CMD-SHELL', 'pg_isready -U rcmp -d rcmp'], interval: 5s, timeout: 5s, retries: 10 }
+  app:
+    build: .
+    depends_on: { db: { condition: service_healthy } }
+    ports: ['3000:3000']
     environment:
-      POSTGRES_USER: rcmp_user
-      POSTGRES_PASSWORD: change_me
-      POSTGRES_DB: rcmp
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./server/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-
-volumes:
-  pgdata:
+      NODE_ENV: development          # demo accounts and demo tools are available; set to production for a real deployment
+      DATABASE_URL: postgres://rcmp:rcmp@db:5432/rcmp
+      RCMP_JWT_SECRET: change-me-change-me-change-me-change-me
+      RCMP_FILE_KEY: 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff
+      RCMP_DATA_DIR: /data
+    volumes: [files:/data]
+volumes: { pgdata: {}, files: {} }
