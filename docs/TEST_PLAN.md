@@ -245,7 +245,7 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 
 | Tool | Status |
 |---|---|
-| Jest + Supertest, database, unit, property, security, contract, smoke, assistant | **Run**: 224 of 224 pass on Node 22.23 (local sandbox, real PostgreSQL 16); the 200 tests that need no browser also pass on Node 24 |
+| Jest + Supertest, database, unit, property, security, contract, smoke, assistant | **Run**: 256 of 256 pass on Node 22.23 (local sandbox, real PostgreSQL 16); the 232 tests that need no browser also pass on Node 24 |
 | Stryker mutation testing | **Run**: 766 mutants, 92.1 % killed (first run 48 %, raised by adding `validators2` and `rules2`) |
 | `npm audit` | **Run**: 0 vulnerabilities in server and client after upgrading react-router to v7 |
 | Playwright + axe-core (browser tests) | **Run**: pass; axe finds no serious or critical violation on 24 routes at 3 widths |
@@ -256,14 +256,14 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | OWASP ZAP baseline | **Run in GitHub Actions.** First run: 0 FAIL, 7 WARN, 63 PASS. After the fixes: 0 FAIL, 0 WARN, 67 PASS, 4 ignored. After bundling fonts: one false Base64 warning, now ignored with a reason (rule 10094). Commits `1d0729f`, `f1b2b17` and `109ec2c`: **0 FAIL, 0 WARN, 66 PASS, 5 ignored** on every run |
 | Docker image and Compose | Written; **not run** (no Docker in the sandbox); the CI service container uses the same PostgreSQL 16 image |
 | Firefox and WebKit browser tests | **Run in GitHub Actions** (the same 24 tests as Chromium; key routes only for axe; one retry). Firefox passed on every run since `30ff8a7`. WebKit: heading wait raised from 8 s to 20 s (`c6654e9`); TC-E2E-10 then ran past its 300 s limit on one slow pull-request run (`f1b2b17`), so each axe run is now capped at 60 s and tried twice and the test limit is 900 s on Firefox and WebKit. **Both passed on both runs of `109ec2c`** |
-| Team contribution tests | 32 tests (`tests/contrib`: A tags, B match, C relativeTime, D fileSize, 8 each), run by `npm run contrib` and by a CI step: **skipped, 0 failed** (24 on `109ec2c`; piece D adds 8). They stay skipped until each member writes their piece (`docs/CONTRIBUTING_STEPS.md`) |
+| Team contribution tests | 32 tests (`tests/contrib`: A tags, B match, C relativeTime, D fileSize, 8 each), run in `npm test`, by `npm run contrib` and by a CI step: **32 passed, 0 failed** on commit `a815503` (all 12 checks green). Each function was written by one member and merged by its own pull request (#3 to #6; `docs/EVIDENCE.md`) |
 | GitHub Actions workflow | Run on 14 and 15 Nov 2026 (every run link is in `docs/EVIDENCE.md`). **Latest completed run (commit `109ec2c`): all 12 checks green** (push and pull request). Earlier red runs and their causes are in `docs/EVIDENCE.md`. The first k6 run used 1 virtual user because k6 reads `K6_DURATION` itself; the variable is now `LOAD_DURATION` |
 
 ## 5. Results (last run: see timestamps inside the evidence files)
 
-- **224 tests, 224 passed, 0 failed, 0 skipped** (`docs/evidence/TEST_REPORT.txt`), 20 suites. The 32 contribution tests (`npm run contrib`) and the four files they test (`shared/contrib`) are counted apart: they are left out of this total and of the coverage figure until each member writes their piece (`docs/CONTRIBUTING_STEPS.md`, step 8).
+- **256 tests, 256 passed, 0 failed, 0 skipped** (`docs/evidence/TEST_REPORT.txt`), 24 suites. This includes the 32 team contribution tests; the four files they test (`shared/contrib`) now count in the coverage figure.
 - **Mutation testing** (`docs/evidence/mutation/index.html`): Stryker changed the shared rules in 766 small ways; the tests caught 92.1 %. The first run caught only 48 %, which showed the early tests were weaker than their coverage figure suggested.
-- **Coverage of source files** (`docs/evidence/COVERAGE_REPORT.txt`, test files excluded, server and shared code): **97.80 % lines, 82.63 % branches, 93.39 % functions, 93.71 % statements** (an earlier run of the same code gave 97.88 % lines and 93.56 % functions; a few timing-dependent lines in the rate limiter and backup code are not hit on every run). Lowest line coverage: `backup.js` 90 %, `mailer.js` 88 % (provider error paths), `assistant.js` 94 %. The React client is exercised by the browser tests but is not part of the coverage figure.
+- **Coverage of source files** (`docs/evidence/COVERAGE_REPORT.txt`, test files excluded, server and shared code): **97.87 % lines, 83.04 % branches, 93.47 % functions, 93.87 % statements** (before the four member files were added the figures were 97.80 %, 82.63 % and 93.39 %; a few timing-dependent lines in the rate limiter and backup code are not hit on every run). Lowest line coverage: `backup.js` 90 %, `mailer.js` 88 % (provider error paths), `assistant.js` 94 %. The React client is exercised by the browser tests but is not part of the coverage figure.
 - **Accessibility** (TC-E2E-10): axe-core with the WCAG 2.0/2.1 A and AA rule sets, 24 routes (9 public, 13 signed-in student, 2 administrator) at 360, 768 and 1280 px: no serious or critical violation after fixing the issues the first run found (avatar contrast, a mismatched accessible name, missing link underlines, a progressbar without a name, an unlabelled field, nested interactive controls, scrollable regions without keyboard access).
 - **Load** (50 users x 40 requests, 70 % reads / 30 % writes, real PostgreSQL, in-process HTTP stack): 2,000 requests, p50 about 110 ms, p95 about 200 ms, max about 360 ms (two runs gave 108, 195, 350 and 119, 216, 372 ms), 0 server errors; NFR-018 asks for p95 < 2 s. The 15-minute k6 run was not executed.
 - **Backup/restore** (NFR-008): `TC-D10` takes a `pg_dump`, checks the SHA-256, restores into a scratch database, compares per-table row counts with the manifest and detects a tampered dump.
@@ -274,10 +274,10 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | ID | Test | File |
 |---|---|---|
 | TC-V01 | task title: 3-20 characters | `tests/validators.test.js` |
-| TC-CA-01..08 | team piece A `normaliseTags`: trim and lower case, comma string, duplicates, empty, 30-character limit, 8-tag limit, bad input, input not changed (skipped until written) | `tests/contrib/tags.test.js` |
-| TC-CB-01..08 | team piece B `matchScore`: identical, disjoint, partial, case, empty lists, repeats, rounding, bad input (skipped until written) | `tests/contrib/match.test.js` |
-| TC-CD-01..08 | team piece D `formatFileSize`: bytes, KB, MB, GB, one terabyte stays GB, one-decimal rounding, bad input, part of a byte (skipped until written) | `tests/contrib/fileSize.test.js` |
-| TC-CC-01..08 | team piece C `relativeTime`: just now, minutes, hours, yesterday, days, date after 30 days, input types, invalid date (skipped until written) | `tests/contrib/relativeTime.test.js` |
+| TC-CA-01..08 | team piece A `normaliseTags`: trim and lower case, comma string, duplicates, empty, 30-character limit, 8-tag limit, bad input, input not changed (Rameel, PR #3) | `tests/contrib/tags.test.js` |
+| TC-CB-01..08 | team piece B `matchScore`: identical, disjoint, partial, case, empty lists, repeats, rounding, bad input (Sami, PR #4) | `tests/contrib/match.test.js` |
+| TC-CD-01..08 | team piece D `formatFileSize`: bytes, KB, MB, GB, one terabyte stays GB, one-decimal rounding, bad input, part of a byte (Hafiz, PR #6) | `tests/contrib/fileSize.test.js` |
+| TC-CC-01..08 | team piece C `relativeTime`: just now, minutes, hours, yesterday, days, date after 30 days, input types, invalid date (Ahmad, PR #5) | `tests/contrib/relativeTime.test.js` |
 | TC-V02 | task description: max 250 characters | `tests/validators.test.js` |
 | TC-V03 | tags: at most 3, no duplicates, valid characters | `tests/validators.test.js` |
 | TC-V04 | file: exactly 10 MiB accepted, 10.1 MB rejected with 413 | `tests/validators.test.js` |

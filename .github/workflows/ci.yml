@@ -47,7 +47,7 @@ jobs:
         run: npm run test:smoke
       - name: Unit tests (validators, rules, auth) - no database
         run: npm run test:unit
-      - name: Team contribution tests (stay skipped until a member turns theirs on; see docs/CONTRIBUTING_STEPS.md)
+      - name: Team contribution tests (the four member functions, merged by pull requests #3 to #6)
         run: npm run contrib
       - name: Full suite with coverage gate (lines >= 90 %, functions >= 85 %)
         run: npm run coverage

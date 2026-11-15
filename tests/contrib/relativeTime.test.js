@@ -1,5 +1,5 @@
 'use strict';
-/** Team contribution C tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
+/** Team contribution C tests. Written by the team, merged through a pull request into feature/final-website. */
 const assert = require('node:assert/strict');
 const { relativeTime } = require('../../shared/contrib/relativeTime');
 const suite = describe;

@@ -1,5 +1,5 @@
 'use strict';
-/** Team contribution D tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
+/** Team contribution D tests. Written by the team, merged through a pull request into feature/final-website. */
 const assert = require('node:assert/strict');
 const { formatFileSize } = require('../../shared/contrib/fileSize');
 const suite = describe;

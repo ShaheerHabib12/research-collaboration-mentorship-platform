@@ -1,5 +1,5 @@
 'use strict';
-/** Team contribution A tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
+/** Team contribution A tests. Written by the team, merged through a pull request into feature/final-website. */
 const assert = require('node:assert/strict');
 const { normaliseTags } = require('../../shared/contrib/tags');
 const suite = describe;

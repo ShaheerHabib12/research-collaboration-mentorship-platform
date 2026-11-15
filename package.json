@@ -76,8 +76,7 @@
     "collectCoverageFrom": [
       "server/**/*.js",
       "shared/**/*.js",
-      "!server/index.js",
-      "!shared/contrib/**"
+      "!server/index.js"
     ],
     "coverageDirectory": "docs/evidence/coverage",
     "coverageReporters": [
@@ -93,8 +92,7 @@
       }
     },
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "<rootDir>/tests/contrib/"
+      "/node_modules/"
     ]
   }
 }

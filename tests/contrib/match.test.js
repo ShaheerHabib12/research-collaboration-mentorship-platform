@@ -1,5 +1,5 @@
 'use strict';
-/** Team contribution B tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
+/** Team contribution B tests. Written by the team, merged through a pull request into feature/final-website. */
 const assert = require('node:assert/strict');
 const { matchScore } = require('../../shared/contrib/match');
 const suite = describe;

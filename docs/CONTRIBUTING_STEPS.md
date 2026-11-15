@@ -1,8 +1,9 @@
 # How a team member adds their code (step by step)
 
-Four small pieces of code are waiting in the project. Each one has a file for the code and a file of ready-made tests.
-Your job: write the code so the tests pass, then send it to GitHub under your own name. Your lecturer can then see
-your work on the project page.
+**Status: all four pieces are written and merged** (pull requests #3 to #6, see `docs/EVIDENCE.md`). This page keeps the steps each member followed.
+
+Four small pieces of code were waiting in the project. Each one has a file for the code and a file of ready-made tests.
+The job: write the code so the tests pass, then send it to GitHub under your own name so the lecturer can see it.
 
 | Piece | Who (suggested) | Write your code in | Tests that must pass | What the code does |
 |-------|-----------------|--------------------|----------------------|--------------------|
@@ -57,7 +58,7 @@ git checkout -b feature/contrib-a-tags-rameel
 npm run contrib
 ```
 
-5. Fix your code until every test of your file shows a green tick. The other pieces stay "skipped"; that is normal.
+5. Fix your code until every test of your file shows a green tick. The other pieces may show as passing or skipped; that is normal.
 6. Check the style rules:
 
 ```powershell
@@ -98,13 +99,13 @@ Copy these three links into `docs/EVIDENCE.md` (the leader can do this for you):
 
 The contributors graph is here: `https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/graphs/contributors`
 
-## Step 8. Leader: close the contribution round (after all pieces are merged)
+## Step 8. Leader: close the contribution round (done on 15 November 2026)
 
-Do these in one commit, so code and documents stay the same:
+These were done in one commit, so code and documents stay the same:
 
 1. In `package.json`, remove `"<rootDir>/tests/contrib/"` from `testPathIgnorePatterns` and `"!shared/contrib/**"` from `collectCoverageFrom`. The 32 tests now run in `npm test` and their code counts in the coverage figure.
 2. Run `npm run report` and `npm run docs`.
-3. Update the test totals in `README.md`, `docs/TEST_PLAN.md`, the report and the guide (search for `224`).
+3. Update the test totals in `README.md`, `docs/TEST_PLAN.md`, the report and the guide (search for the old total, 224).
 4. Fill the status table in `docs/EVIDENCE.md` with the real links.
 5. Push, wait for green, then merge pull request #2.
 
