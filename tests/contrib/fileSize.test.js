@@ -1,8 +1,8 @@
 'use strict';
-/** Team contribution D tests. TEAM: when your function is ready, change `describe.skip` to `describe` on the next line. */
+/** Team contribution D tests. TEAM: when your function is ready, change `describe` to `describe` on the next line. */
 const assert = require('node:assert/strict');
 const { formatFileSize } = require('../../shared/contrib/fileSize');
-const suite = describe.skip;
+const suite = describe;
 
 suite('TC-CD: formatFileSize (team contribution D)', () => {
   test('TC-CD-01 under 1024 bytes shows whole bytes', () => {
