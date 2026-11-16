@@ -11,7 +11,7 @@
 ![Backend](https://img.shields.io/badge/Backend-Node.js%2024%20%C2%B7%20Express%205-339933)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL%2016-336791)
 ![Tests](https://img.shields.io/badge/Tests-256%20passing-0d9488)
-![Coverage](https://img.shields.io/badge/Coverage-98.0%25%20lines-0d9488)
+![Coverage](https://img.shields.io/badge/Coverage-97.9%25%20lines-0d9488)
 ![Mutation score](https://img.shields.io/badge/Mutation%20score-92%25-0d9488)
 ![Status](https://img.shields.io/badge/Status-Coursework%202-d97706)
 [![CI](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/workflows/ci.yml)
@@ -29,7 +29,7 @@
 | API | 71 routes, Express 5 | `docs/API.md`, `docs/source/api.rst` |
 | Code size | 2,647 lines server and shared, 4,151 lines client, 2,109 lines of tests | `wc -l` |
 | Automated tests | 256 in 24 suites, all passing | `npm test`, `docs/evidence/TEST_REPORT.txt` |
-| Coverage (server and shared code) | 98.0 % lines, 83.0 % branches, 93.6 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
+| Coverage (server and shared code) | 97.9 % lines, 83.0 % branches, 93.5 % functions | `docs/evidence/COVERAGE_REPORT.txt` |
 | Mutation score (shared rules) | 92.1 % of 766 mutants caught | `npm run mutation` |
 | Accessibility | no serious or critical axe-core finding on 24 routes at 360, 768 and 1280 px | test TC-E2E-10 |
 | Load (50 users, 2,000 requests, in process) | p95 about 200 ms, no server errors | `npm run load` |
@@ -288,7 +288,7 @@ Tests run against the **real HTTP server and a real PostgreSQL database**, each 
 | Security scan | OWASP ZAP baseline (CI job) | passive scan of the running app |
 | Dependencies and style | `npm audit`, ESLint | 0 known vulnerable packages; 0 lint errors |
 
-**Latest local run (Node 22.23, PostgreSQL 16): 256 of 256 pass; 98.0 % lines, 83.0 % branches, 93.6 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. Cypress, k6, ZAP and the Firefox and WebKit tests run in GitHub Actions (links in `docs/EVIDENCE.md`); Docker is not run in the build sandbox. The test plan says which results are real and which are pending.
+**Latest local run (Node 22.23, PostgreSQL 16): 256 of 256 pass; 97.9 % lines, 83.0 % branches, 93.5 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. Cypress, k6, ZAP and the Firefox and WebKit tests run in GitHub Actions (links in `docs/EVIDENCE.md`); Docker is not run in the build sandbox. The test plan says which results are real and which are pending.
 
 ## 12. Development workflow
 
