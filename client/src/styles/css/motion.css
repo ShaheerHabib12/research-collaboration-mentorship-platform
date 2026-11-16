@@ -90,24 +90,31 @@ a.card:hover, a.kpi:hover { transform: translateY(-2px); box-shadow: var(--shado
 .plan { transform-style: preserve-3d; transition: transform .25s var(--ease-out), box-shadow .25s; }
 
 .stack-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 40px; align-items: center; }
-.stack3d { --sry: -18deg; --srx: 16deg; position: relative; min-height: 380px; perspective: 1400px; cursor: grab; touch-action: pan-y; outline-offset: 6px; border-radius: 20px; display: grid; place-items: center;
-  background: radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 70%); }
+.stack3d { --sry: -18deg; --srx: 16deg; --mx: 30%; --my: 20%; position: relative; min-height: 420px; perspective: 1500px; perspective-origin: 50% 40%; cursor: grab; touch-action: pan-y; outline-offset: 6px; border-radius: 20px; display: grid; place-items: center;
+  background: radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 72%); }
+.stack3d::after { content: ''; position: absolute; left: 50%; bottom: 14px; width: 70%; height: 34px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(2,6,23,.55), transparent); filter: blur(6px); pointer-events: none; }
 .stack3d:active { cursor: grabbing; }
 .stack-model { display: flex; flex-direction: column; align-items: center; gap: 0; transform-style: preserve-3d; transform: rotateX(var(--srx)) rotateY(var(--sry)); will-change: transform; }
-.stack3d .slab { position: relative; width: min(340px, 78vw); padding: 16px 22px 18px; border-radius: 16px; color: #fff; transform-style: preserve-3d; display: flex; flex-direction: column; gap: 2px;
-  border: 1px solid rgba(255,255,255,.28);
-  box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 -1px 0 rgba(0,0,0,.18) inset, 0 6px 0 -1px var(--edge), 0 12px 0 -2px var(--edge2), 0 34px 44px -20px rgba(2,6,23,.55); }
-.stack3d .slab::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 38%); }
-.stack3d .slab .tag { font: 600 .6875rem/1 var(--font-body, inherit); letter-spacing: .08em; text-transform: uppercase; opacity: .85; margin-bottom: 6px; }
-.stack3d .slab b { font: 700 1.15rem/1.2 var(--font-display, inherit); } .stack3d .slab small { opacity: .92; margin-top: 4px; font-size: .8125rem; line-height: 1.35; }
-.stack3d .s1 { --edge: #1e3a8a; --edge2: #172554; background: linear-gradient(135deg, #2563eb, #6366f1); transform: translateZ(60px); }
-.stack3d .s2 { --edge: #0b5f58; --edge2: #064e49; background: linear-gradient(135deg, #0d9488, #14b8a6); transform: translateZ(30px); }
-.stack3d .s3 { --edge: #0b1220; --edge2: #020617; background: linear-gradient(135deg, #1e293b, #475569); transform: translateZ(0); }
-.stack3d .link { position: relative; width: 2px; height: 34px; background: repeating-linear-gradient(to bottom, var(--primary) 0 5px, transparent 5px 9px); opacity: .7; transform: translateZ(40px); }
+.stack3d .slab { position: relative; width: min(340px, 78vw); padding: 16px 22px 18px; border-radius: 14px; color: #fff; transform-style: preserve-3d; display: flex; flex-direction: column; gap: 2px;
+  border: 1px solid rgba(255,255,255,.3); transition: transform .55s cubic-bezier(.2,.8,.2,1); animation: slab-bob 5s ease-in-out infinite;
+  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 -1px 0 rgba(0,0,0,.2) inset, 0 7px 0 -1px var(--edge), 0 14px 0 -2px var(--edge2), 0 38px 46px -20px rgba(2,6,23,.6); }
+.stack3d .slab::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(120% 90% at var(--mx) var(--my), rgba(255,255,255,.34), rgba(255,255,255,0) 55%); }
+.stack3d .slab .tag { font: 600 .6875rem/1 var(--font-body, inherit); letter-spacing: .08em; text-transform: uppercase; opacity: .88; margin-bottom: 6px; transform: translateZ(14px); }
+.stack3d .slab b { font: 700 1.15rem/1.2 var(--font-display, inherit); transform: translateZ(26px); text-shadow: 0 2px 6px rgba(2,6,23,.35); }
+.stack3d .slab small { opacity: .94; margin-top: 4px; font-size: .8125rem; line-height: 1.35; transform: translateZ(14px); }
+.stack3d .s1 { --edge: #1e3a8a; --edge2: #172554; background: linear-gradient(135deg, #2563eb, #6366f1); transform: translateZ(72px); }
+.stack3d .s2 { --edge: #0b5f58; --edge2: #064e49; background: linear-gradient(135deg, #0d9488, #14b8a6); transform: translateZ(36px); animation-delay: -1.6s; }
+.stack3d .s3 { --edge: #1f2a3d; --edge2: #0b1220; background: linear-gradient(135deg, #1e293b, #475569); transform: translateZ(0); animation-delay: -3.2s; }
+/* hover or focus: the layers pull apart so the depth is visible */
+.stack3d:hover .s1, .stack3d:focus-visible .s1 { transform: translateZ(120px); }
+.stack3d:hover .s2, .stack3d:focus-visible .s2 { transform: translateZ(56px); }
+.stack3d:hover .s3, .stack3d:focus-visible .s3 { transform: translateZ(-20px); }
+.stack3d .link { position: relative; width: 2px; height: 34px; background: repeating-linear-gradient(to bottom, var(--primary) 0 5px, transparent 5px 9px); opacity: .75; transform: translateZ(40px); }
 .stack3d .link i { position: absolute; left: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 12px var(--teal); animation: stack-flow 1.8s linear infinite; }
 .stack3d .l2 i { animation-delay: .9s; }
+@keyframes slab-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
 @keyframes stack-flow { from { top: -4px; opacity: 0; } 20% { opacity: 1; } to { top: 28px; opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .stack3d .link i { animation: none; top: 12px; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .stack3d .link i { animation: none; top: 12px; opacity: 1; } .stack3d .slab { animation: none; transition: none; } }
 @media (max-width: 860px) { .stack-wrap { grid-template-columns: 1fr; } .stack3d { min-height: 340px; } }
 @media (prefers-reduced-motion: reduce) {
   .hero .stage .float3d { transform: none; }

@@ -220,6 +220,8 @@ If you missed the one-time password, set a new one with `npm run admin:password 
 
 **E-mail verification.** With `RCMP_MAIL_PROVIDER` empty, sign-up works without a PIN. To require a 6-digit code sent to the address, configure Brevo or Resend (`docs/EMAIL_SETUP.md`). To try the flow on your own computer without sending mail, start the server with `RCMP_MAIL_PROVIDER=console` and `RCMP_REQUIRE_VERIFY=1`: the PIN is printed in the terminal. `npm run start:env` reads these settings from a `.env` file. Contact-form messages and notifications go to every administrator.
 
+**Real e-mail was tested on the live site.** On 16 November 2026 https://rcmp-team02.me sent a real sign-up PIN and a real password-reset e-mail through Brevo (sender `noreply@rcmp-team02.me`, domain authenticated with SPF, DKIM and DMARC) to a Gmail inbox; the PIN created the account and the new password signed in. The nine screenshots are in [`docs/evidence/email/`](docs/evidence/email/README.md). This was a manual check; the automated tests still use a mocked sender.
+
 The **Demo tools** button (bottom-left, development only) switches user, resets the data and makes the server fail on purpose (offline, database failure, expired session, edit conflict) so every error screen can be demonstrated.
 
 ## 9. Configuration
@@ -352,6 +354,7 @@ Individual contributions are recorded in the report's Contributions Table and ar
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | branching, commits, reviews |
 | [`docs/CONTRIBUTING_STEPS.md`](docs/CONTRIBUTING_STEPS.md) | step-by-step guide for a member to add a code piece |
 | [`docs/EVIDENCE.md`](docs/EVIDENCE.md) | links to the pull request, every CI run and each member's contribution |
+| [`docs/evidence/email/`](docs/evidence/email/README.md) | screenshots of the real PIN and password-reset e-mails on the live site |
 
 ## 17. Troubleshooting
 

@@ -17,7 +17,7 @@ function Stack3D() {
     const tick = () => { if (!drag) { t += 0.012; ry = -18 + Math.sin(t) * 16; paint(); } raf = requestAnimationFrame(tick); };
     paint(); if (!reduce) raf = requestAnimationFrame(tick);
     const down = (e) => { drag = { x: e.clientX, y: e.clientY, ry, rx }; el.setPointerCapture(e.pointerId); };
-    const move = (e) => { if (!drag) return; ry = Math.max(-40, Math.min(40, drag.ry + (e.clientX - drag.x) * 0.25)); rx = Math.max(4, Math.min(30, drag.rx - (e.clientY - drag.y) * 0.2)); paint(); };
+    const move = (e) => { const r = el.getBoundingClientRect(); el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(0) + '%'); el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(0) + '%'); if (!drag) return; ry = Math.max(-40, Math.min(40, drag.ry + (e.clientX - drag.x) * 0.25)); rx = Math.max(4, Math.min(30, drag.rx - (e.clientY - drag.y) * 0.2)); paint(); };
     const up = () => { drag = null; t = Math.asin(Math.max(-1, Math.min(1, (ry + 18) / 16))) || 0; };
     const key = (e) => { const d = { ArrowLeft: [-6, 0], ArrowRight: [6, 0], ArrowUp: [0, 3], ArrowDown: [0, -3] }[e.key]; if (!d) return; e.preventDefault(); ry = Math.max(-40, Math.min(40, ry + d[0])); rx = Math.max(4, Math.min(30, rx + d[1])); paint(); };
     el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('keydown', key);

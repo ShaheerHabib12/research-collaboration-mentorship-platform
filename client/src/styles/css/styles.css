@@ -268,9 +268,10 @@ legend { padding: 0; font: 500 .875rem/1.25rem var(--font-body); color: var(--na
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* --------------------------- KPI ----------------------------------------- */
-.kpi { padding: 20px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.kpi { padding: 20px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; overflow: hidden; container-type: inline-size; }
+.kpi > div:first-child { min-width: 0; flex: 1 1 auto; }
 .kpi .k { font: 600 .6875rem/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
-.kpi .v { font: 700 2.25rem/1.1 var(--font-display); color: var(--primary-deep); margin-top: 10px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.kpi .v { font: 700 clamp(1.4rem, 11cqw, 2.25rem)/1.1 var(--font-display); overflow-wrap: anywhere; color: var(--primary-deep); margin-top: 10px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 .kpi .s { font-size: .8125rem; color: var(--text-3); margin-top: 6px; }
 .kpi .ic { width: 40px; height: 40px; border-radius: var(--r-md); display: grid; place-items: center; background: var(--primary-tint-2); color: var(--primary-strong); flex: none; }
 .kpi .ic.teal { background: var(--teal-tint-2); color: var(--teal-strong); }
