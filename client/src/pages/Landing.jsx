@@ -12,22 +12,26 @@ function Stack3D() {
   useEffect(() => {
     const el = box.current; if (!el) return undefined;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let ry = -28, rx = 58, drag = null, raf = 0, auto = !reduce;
+    let ry = -18, rx = 16, drag = null, raf = 0, t = 0;
     const paint = () => { el.style.setProperty('--sry', ry.toFixed(1) + 'deg'); el.style.setProperty('--srx', rx.toFixed(1) + 'deg'); };
-    const tick = () => { if (auto && !drag) { ry += 0.12; paint(); } raf = requestAnimationFrame(tick); };
+    const tick = () => { if (!drag) { t += 0.012; ry = -18 + Math.sin(t) * 16; paint(); } raf = requestAnimationFrame(tick); };
     paint(); if (!reduce) raf = requestAnimationFrame(tick);
     const down = (e) => { drag = { x: e.clientX, y: e.clientY, ry, rx }; el.setPointerCapture(e.pointerId); };
-    const move = (e) => { if (!drag) return; ry = drag.ry + (e.clientX - drag.x) * 0.4; rx = Math.max(25, Math.min(75, drag.rx - (e.clientY - drag.y) * 0.3)); paint(); };
-    const up = () => { drag = null; };
-    const key = (e) => { const d = { ArrowLeft: [-8, 0], ArrowRight: [8, 0], ArrowUp: [0, 5], ArrowDown: [0, -5] }[e.key]; if (!d) return; e.preventDefault(); ry += d[0]; rx = Math.max(25, Math.min(75, rx + d[1])); paint(); };
+    const move = (e) => { if (!drag) return; ry = Math.max(-40, Math.min(40, drag.ry + (e.clientX - drag.x) * 0.25)); rx = Math.max(4, Math.min(30, drag.rx - (e.clientY - drag.y) * 0.2)); paint(); };
+    const up = () => { drag = null; t = Math.asin(Math.max(-1, Math.min(1, (ry + 18) / 16))) || 0; };
+    const key = (e) => { const d = { ArrowLeft: [-6, 0], ArrowRight: [6, 0], ArrowUp: [0, 3], ArrowDown: [0, -3] }[e.key]; if (!d) return; e.preventDefault(); ry = Math.max(-40, Math.min(40, ry + d[0])); rx = Math.max(4, Math.min(30, rx + d[1])); paint(); };
     el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('keydown', key);
     return () => { cancelAnimationFrame(raf); el.removeEventListener('pointerdown', down); el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); el.removeEventListener('keydown', key); };
   }, []);
   return (
-    <div className="stack3d" ref={box} tabIndex={0} role="group" aria-label="Three-layer architecture, turn with the mouse or arrow keys. Top: React client. Middle: Express API. Bottom: PostgreSQL database.">
-      <div className="slab s3"><b>PostgreSQL 16</b><small>constraints, transactions, encrypted files</small></div>
-      <div className="slab s2"><b>Express 5 API</b><small>JWT, helmet, rules, Unit of Work</small></div>
-      <div className="slab s1"><b>React 18 client</b><small>26 pages, shared validators</small></div>
+    <div className="stack3d" ref={box} tabIndex={0} role="group" aria-label="Three-layer architecture, tilt with the mouse or arrow keys. Top: React client. Middle: Express API. Bottom: PostgreSQL database.">
+      <div className="stack-model">
+        <div className="slab s1"><span className="tag">Layer 1 · Browser</span><b>React 18 client</b><small>26 pages, shared validators</small></div>
+        <div className="link l1" aria-hidden="true"><i /></div>
+        <div className="slab s2"><span className="tag">Layer 2 · Server</span><b>Express 5 API</b><small>JWT, helmet, rules, Unit of Work</small></div>
+        <div className="link l2" aria-hidden="true"><i /></div>
+        <div className="slab s3"><span className="tag">Layer 3 · Data</span><b>PostgreSQL 16</b><small>constraints, transactions, encrypted files</small></div>
+      </div>
     </div>
   );
 }
@@ -85,7 +89,7 @@ export default function Landing() {
           <Feature icon="kanban" title="A private workspace">Tasks, milestones and files (up to 10 MB) visible only to the team - with a timestamped history of changes.</Feature>
           <Feature ic="teal" icon="graduation-cap" title="Mentors and researcher support">Browse mentor profiles, request guidance, or raise a support request that is matched to an available researcher.</Feature>
         </div>
-        <div className="notice warn mt-lg" style={{ marginTop: 24 }}><Icon name="alert-triangle" /><div><strong>Mentorship is not supervision.</strong> RCMP complements, and does not replace, official university supervision, institutional research governance or ethics approval. We cannot guarantee compatibility, publication or mentor quality.</div></div>
+        <aside className="callout" aria-label="Good to know"><span className="callout-ic"><Icon name="scale" /></span><div><span className="callout-label">Good to know</span><p><strong>Mentorship is not supervision.</strong> RCMP complements, and does not replace, official university supervision, institutional research governance or ethics approval. We cannot guarantee compatibility, publication or mentor quality.</p></div></aside>
       </section>
 
       <section className="section tint" id="how" aria-labelledby="h-how"><div className="wrap">
@@ -111,7 +115,7 @@ export default function Landing() {
       <section className="section" id="stack" aria-labelledby="h-stack"><div className="wrap stack-wrap">
         <div><div className="eyebrow">How it is built</div><h2 id="h-stack">Three layers, each talking only to the one below</h2>
           <p className="muted">The browser never touches the database. Every rule is checked again on the server, and each request runs in one database transaction, so a save either happens completely or not at all.</p>
-          <p className="small muted">Drag the model to turn it.</p></div>
+          <p className="small muted">Drag the model to tilt it.</p></div>
         <Stack3D />
       </div></section>
 

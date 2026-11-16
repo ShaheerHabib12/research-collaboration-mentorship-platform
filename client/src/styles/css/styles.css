@@ -748,3 +748,19 @@ main { overflow-x: clip; }
   .shell:not(.side-hidden) .topbar .menu-btn { display: none; }
 }
 @media (max-width: 1024px) { .side-menu-btn { display: none; } }
+
+/* Brand: name and subtitle stay on two tidy lines, never three */
+.brand .brand-sub { white-space: nowrap; display: block; margin-top: 3px; font-size: .75rem; }
+.brand .brand-name { display: block; }
+.brand-row .brand { padding: 0 8px 0 18px; gap: 10px; }
+.brand-row .side-menu-btn { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
+.brand br { display: none; }
+
+/* Calm "Good to know" card: important, but clearly not an error (no warning colours) */
+.callout { display: flex; gap: 16px; align-items: flex-start; margin-top: 28px; padding: 18px 22px; border-radius: var(--r-xl, 16px); background: linear-gradient(135deg, var(--primary-tint), var(--surface)); border: 1px solid var(--border); border-left: 4px solid var(--teal); box-shadow: var(--shadow-1); }
+.callout-ic { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--teal-tint); color: var(--teal-strong); border: 1px solid var(--teal-tint-2); }
+.callout-label { display: block; font: 600 .6875rem/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--teal-strong); margin-bottom: 6px; }
+.callout p { margin: 0; color: var(--text-2); font-size: .9375rem; line-height: 1.55; }
+.callout p strong { color: var(--text); font-weight: 600; }
+:root:not([data-theme="dark"]) .callout-ic { color: #0f766e; background: #ccfbf1; border-color: #99f6e4; }
+:root:not([data-theme="dark"]) .callout-label { color: #0f766e; }
