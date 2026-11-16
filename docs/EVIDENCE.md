@@ -55,6 +55,10 @@ Each member's piece (A, B, C, D) is a function with ready-made tests (see `docs/
 
 Contributors graph: https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/graphs/contributors (GitHub counts a person here once the commits are on `main`, so the graph fills in after pull request #2 is merged; until then the pull request pages and the commit links above are the proof).
 
+## 3b. Real e-mail on the live site
+
+On 16 November 2026 the live site (https://rcmp-team02.me) sent a real sign-up PIN and a real password-reset e-mail through Brevo to a Gmail inbox. The new account was created with the PIN and then signed in with the reset password. Nine screenshots and a short index are in [`docs/evidence/email/`](evidence/email/README.md). This is a manual check, not an automated test. Setup steps: [`docs/EMAIL_SETUP.md`](EMAIL_SETUP.md).
+
 ## 4. Local evidence files (inside the repository)
 
 | File | What it holds |
@@ -63,3 +67,4 @@ Contributors graph: https://github.com/ShaheerHabib12/research-collaboration-men
 | `docs/evidence/COVERAGE_REPORT.txt` | Coverage for every server and shared file |
 | `docs/evidence/mutation/index.html` | Mutation testing report |
 | `docs/screenshots/` | Screens of the running site |
+| `docs/evidence/email/` | Nine screenshots of the real sign-up PIN and password-reset e-mails (16 November 2026) |

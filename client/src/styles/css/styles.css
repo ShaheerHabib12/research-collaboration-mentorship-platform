@@ -268,9 +268,10 @@ legend { padding: 0; font: 500 .875rem/1.25rem var(--font-body); color: var(--na
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* --------------------------- KPI ----------------------------------------- */
-.kpi { padding: 20px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.kpi { padding: 20px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; overflow: hidden; container-type: inline-size; }
+.kpi > div:first-child { min-width: 0; flex: 1 1 auto; }
 .kpi .k { font: 600 .6875rem/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
-.kpi .v { font: 700 2.25rem/1.1 var(--font-display); color: var(--primary-deep); margin-top: 10px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.kpi .v { font: 700 clamp(1.4rem, 11cqw, 2.25rem)/1.1 var(--font-display); overflow-wrap: anywhere; color: var(--primary-deep); margin-top: 10px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 .kpi .s { font-size: .8125rem; color: var(--text-3); margin-top: 6px; }
 .kpi .ic { width: 40px; height: 40px; border-radius: var(--r-md); display: grid; place-items: center; background: var(--primary-tint-2); color: var(--primary-strong); flex: none; }
 .kpi .ic.teal { background: var(--teal-tint-2); color: var(--teal-strong); }
@@ -755,3 +756,12 @@ main { overflow-x: clip; }
 .brand-row .brand { padding: 0 8px 0 18px; gap: 10px; }
 .brand-row .side-menu-btn { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
 .brand br { display: none; }
+
+/* Calm "Good to know" card: important, but clearly not an error (no warning colours) */
+.callout { display: flex; gap: 16px; align-items: flex-start; margin-top: 28px; padding: 18px 22px; border-radius: var(--r-xl, 16px); background: linear-gradient(135deg, var(--primary-tint), var(--surface)); border: 1px solid var(--border); border-left: 4px solid var(--teal); box-shadow: var(--shadow-1); }
+.callout-ic { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--teal-tint); color: var(--teal-strong); border: 1px solid var(--teal-tint-2); }
+.callout-label { display: block; font: 600 .6875rem/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--teal-strong); margin-bottom: 6px; }
+.callout p { margin: 0; color: var(--text-2); font-size: .9375rem; line-height: 1.55; }
+.callout p strong { color: var(--text); font-weight: 600; }
+:root:not([data-theme="dark"]) .callout-ic { color: #0f766e; background: #ccfbf1; border-color: #99f6e4; }
+:root:not([data-theme="dark"]) .callout-label { color: #0f766e; }
