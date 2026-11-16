@@ -748,3 +748,10 @@ main { overflow-x: clip; }
   .shell:not(.side-hidden) .topbar .menu-btn { display: none; }
 }
 @media (max-width: 1024px) { .side-menu-btn { display: none; } }
+
+/* Brand: name and subtitle stay on two tidy lines, never three */
+.brand .brand-sub { white-space: nowrap; display: block; margin-top: 3px; font-size: .75rem; }
+.brand .brand-name { display: block; }
+.brand-row .brand { padding: 0 8px 0 18px; gap: 10px; }
+.brand-row .side-menu-btn { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
+.brand br { display: none; }
