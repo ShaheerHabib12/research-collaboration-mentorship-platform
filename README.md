@@ -138,6 +138,10 @@ Details, the Coursework 1 to Coursework 2 changes and the rationale are in [`doc
 
 ## 6. Screenshots
 
+RCMP has a light theme and a dark theme. The sun and moon button in the top bar switches them, and the choice is kept in the browser. The first table shows the light theme and the second the dark theme. `node scripts/screenshots.js` retakes every picture from the running app.
+
+### Light theme
+
 | | |
 |---|---|
 | ![Dashboard](docs/screenshots/03-dashboard.png) **Dashboard** | ![Discover](docs/screenshots/04-discover.png) **Discover** |
@@ -146,8 +150,19 @@ Details, the Coursework 1 to Coursework 2 changes and the rationale are in [`doc
 | ![Pricing](docs/screenshots/11-pricing.png) **Public pricing** | ![Contact](docs/screenshots/12-contact.png) **Contact page** |
 | ![Globe](docs/screenshots/13-network-globe.png) **3-D network globe** | ![Mobile menu](docs/screenshots/14-mobile-menu.png) **Phone navigation** |
 | ![Thanks](docs/screenshots/15-contact-thanks.png) **Contact thank-you page** | ![Inbox](docs/screenshots/16-admin-messages.png) **Admin message inbox** |
-| ![Admin](docs/screenshots/09-admin.png) **Administration** | ![Mobile](docs/screenshots/10-mobile-dashboard.png) **Mobile layout** |
-| ![3-D stack](docs/screenshots/17-stack-3d.png) **Drag-to-rotate 3-D stack** | |
+| ![Admin](docs/screenshots/09-admin.png) **Administration** | ![Compensation](docs/screenshots/18-compensation.png) **Compensation (administrator)** |
+| ![Mobile](docs/screenshots/10-mobile-dashboard.png) **Mobile layout** | ![3-D stack](docs/screenshots/17-stack-3d.png) **Drag-to-rotate 3-D stack** |
+
+### Dark theme
+
+| | |
+|---|---|
+| ![Landing, dark](docs/screenshots/01-landing-dark.png) **Landing page** | ![Dashboard, dark](docs/screenshots/03-dashboard-dark.png) **Dashboard** |
+| ![Discover, dark](docs/screenshots/04-discover-dark.png) **Discover** | ![Workspace, dark](docs/screenshots/05-workspace-dark.png) **Workspace task board** |
+| ![Team agreement, dark](docs/screenshots/06-team-agreement-dark.png) **Team agreement** | ![Scout, dark](docs/screenshots/08-scout-assistant-dark.png) **Scout help assistant** |
+| ![Admin, dark](docs/screenshots/09-admin-dark.png) **Administration** | ![Compensation, dark](docs/screenshots/18-compensation-dark.png) **Compensation (administrator)** |
+| ![Pricing, dark](docs/screenshots/11-pricing-dark.png) **Public pricing** | ![Login, dark](docs/screenshots/02-login-dark.png) **Sign in** |
+| ![Mobile, dark](docs/screenshots/10-mobile-dashboard-dark.png) **Mobile layout** | ![3-D stack, dark](docs/screenshots/17-stack-3d-dark.png) **Drag-to-rotate 3-D stack** |
 
 ## 7. Repository structure
 

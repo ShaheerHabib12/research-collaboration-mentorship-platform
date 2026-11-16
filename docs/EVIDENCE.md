@@ -66,5 +66,5 @@ On 16 November 2026 the live site (https://rcmp-team02.me) sent a real sign-up P
 | `docs/evidence/TEST_REPORT.txt` | Every test with PASS or FAIL and its time |
 | `docs/evidence/COVERAGE_REPORT.txt` | Coverage for every server and shared file |
 | `docs/evidence/mutation/index.html` | Mutation testing report |
-| `docs/screenshots/` | Screens of the running site |
+| `docs/screenshots/` | 34 screens of the running site, in the light theme and the dark theme (files ending in `-dark`) |
 | `docs/evidence/email/` | Nine screenshots of the real sign-up PIN and password-reset e-mails (16 November 2026) |
