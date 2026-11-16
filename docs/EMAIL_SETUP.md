@@ -17,14 +17,15 @@ Free hosts such as Render block outgoing SMTP ports, so the server sends mail ov
 
 ## Set up Brevo (about 10 minutes)
 1. Create an account at brevo.com and confirm your e-mail. New accounts can be reviewed before sending is allowed; if sending is refused, contact Brevo support.
-2. **Senders, domains and dedicated IPs, then Senders, then Add a sender.** Use a real address you can read. Brevo mails it a code or link: confirm it.
-3. **SMTP and API, then API keys, then Generate a new API key.** Copy it once. Use the **API key** (starts with `xkeysib-`), not the SMTP password.
+2. **Senders, domains and dedicated IPs, then Domains, then Add a domain.** Brevo only trusts a domain you own. Add its records at your DNS host (a Brevo code TXT, two DKIM CNAMEs, a DMARC TXT), then click Verify records and Authenticate domain. We used `rcmp-team02.me` (Namecheap).
+   Then **Senders, then Add a sender** (we used `noreply@rcmp-team02.me`). On an authenticated domain it shows Verified without a code. With a plain Gmail or university address Brevo rewrites or rejects the sender, so the domain comes first.
+3. **SMTP and API, then API keys, then Generate a new API key.** Choose **Restricted** access and set only **Transactional email** to **All** (a key with every row on None cannot send). Copy it once. Use the **API key** (starts with `xkeysib-`), not the SMTP password.
 4. On your host (Render) add:
    - `RCMP_MAIL_PROVIDER` = `brevo`
    - `RCMP_MAIL_API_KEY` = the key
    - `RCMP_MAIL_FROM` = the verified sender address
    - `RCMP_MAIL_FROM_NAME` = `RCMP`
-   - `RCMP_PUBLIC_URL` = `https://your-app.onrender.com` (no trailing slash)
+   - `RCMP_PUBLIC_URL` = `https://rcmp-team02.me`, or your own address (no trailing slash)
 5. Redeploy. The log must say `E-mail verification: ON (brevo)`. Register with a second address you own: the PIN mail should arrive within a minute (check spam).
 
 Start-up stops with a clear message if the provider is `brevo` or `resend` and the key or sender is missing.
@@ -38,5 +39,5 @@ The PIN is printed in the terminal. Do not use `console` on a live site: it puts
 ## Limits (be honest in the report)
 - Verification proves control of a mailbox, not identity or a university affiliation.
 - Unconfirmed accounts are kept until the address is registered again; there is no automatic clean-up job.
-- The mail itself was tested here with a captured sender and a mocked HTTP call (TC-VF-01 to 12, TC-E2E-19). A real delivery through Brevo has not been run by us.
+- The mail itself was tested here with a captured sender and a mocked HTTP call (TC-VF-01 to 12, TC-E2E-19). On 16 November 2026 the team also ran a real delivery on the live site (https://rcmp-team02.me, Brevo, sender noreply@rcmp-team02.me on a domain authenticated with SPF, DKIM and DMARC records): a sign-up PIN e-mail and a password-reset e-mail both reached a Gmail inbox. This was a manual check with screenshots, not an automated test.
 - Request limits (12 per 10 minutes per client on register, resend and verify) are held in memory, so they reset when the server restarts and are per server instance.
