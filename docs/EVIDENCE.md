@@ -68,3 +68,4 @@ On 16 November 2026 the live site (https://rcmp-team02.me) sent a real sign-up P
 | `docs/evidence/mutation/index.html` | Mutation testing report |
 | `docs/screenshots/` | 34 screens of the running site, in the light theme and the dark theme (files ending in `-dark`) |
 | `docs/evidence/email/` | Nine screenshots of the real sign-up PIN and password-reset e-mails (16 November 2026) |
+| `docs/evidence/live/` | Seven screenshots of the hosted site on 18 November 2026: Render deployed, new student account, project created, file uploaded and downloaded, administrator dashboard |

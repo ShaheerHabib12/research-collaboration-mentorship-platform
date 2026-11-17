@@ -164,6 +164,17 @@ RCMP has a light theme and a dark theme. The sun and moon button in the top bar 
 | ![Pricing, dark](docs/screenshots/11-pricing-dark.png) **Public pricing** | ![Login, dark](docs/screenshots/02-login-dark.png) **Sign in** |
 | ![Mobile, dark](docs/screenshots/10-mobile-dashboard-dark.png) **Mobile layout** | ![3-D stack, dark](docs/screenshots/17-stack-3d-dark.png) **Drag-to-rotate 3-D stack** |
 
+### Live site check, 18 November 2026
+
+After the final merge (pull request #14) and the Render deploy, the team used the hosted site at https://rcmp-team02.me in production mode: a new student account was created, a project brief was published, a PDF was uploaded to the private files and downloaded again (the site decrypts it on the server), and the real administrator account was signed in. These are screenshots of that session; the files are in `docs/evidence/live/`.
+
+| | |
+|---|---|
+| ![Render deploy](docs/evidence/live/01-render-deployed.png) **Render: service deployed** | ![Live landing](docs/evidence/live/02-live-landing.png) **Live landing page** |
+| ![New project](docs/evidence/live/03-signed-in-student-new-project.png) **Signed-in student, new project form** | ![Project created](docs/evidence/live/04-project-created.png) **Project created (PRJ-1012)** |
+| ![File uploaded](docs/evidence/live/05-file-uploaded.png) **File uploaded to the workspace** | ![File downloaded](docs/evidence/live/06-file-downloaded-decrypted.png) **File downloaded (decrypted by the server)** |
+| ![Admin dashboard](docs/evidence/live/07-admin-dashboard.png) **Administrator dashboard on the live site** | |
+
 ## 7. Repository structure
 
 ```
