@@ -34,12 +34,12 @@ Each row is an equivalence class; "TC" names the test that exercises it.
 
 | Input | Class | Example | Expected | TC |
 |---|---|---|---|---|
-| Task title | empty / whitespace | `"  "` | error | TC-V01 |
+| Task title | empty / whitespace | `"  "` | error | TC-PB-01 |
 | | below minimum (boundary) | 2 chars | error | TC-V01 |
 | | minimum | 3 chars | ok | TC-V01 |
 | | maximum | 20 chars | ok | TC-V01, API-20 |
 | | above maximum (boundary) | 21 chars | error, nothing saved | TC-V01, API-20 |
-| | contains markup | `<b>x</b>` | tags removed | TC-V01, API-08 |
+| | contains markup | `<b>x</b>abc` | tags removed, stored as `xabc` | TC-PB-01 |
 | Description | 0 / 250 / 251 chars | | ok / ok / error | TC-V02 |
 | Tags | 0-3 valid tags | | ok | TC-V03 |
 | | 4 tags (boundary) | | error | TC-V03, API-20 |
@@ -111,6 +111,48 @@ Each row is an equivalence class; "TC" names the test that exercises it.
 ### U5/U6 API (per endpoint family)
 
 For every endpoint the following classes are covered at least once across the API tests: no token (401), forged/expired token (401), wrong role (403), non-member (403), unknown id (404), invalid body (400 with `fields`), valid request (200/201), duplicate or illegal state (409). The matrix is in the traceability table: accounts API-01..09, discovery API-10..11, projects API-12..17, agreement API-18, 41, 42, workspace API-19..26, 44, resilience API-26..30, 52, 53, subscription API-31, 32, 47, compensation API-33..35, administration API-36, 37, 48, 49, notifications API-38, 50, mentorship API-39, 45, support API-40, 46, dashboard API-51.
+
+## 3c. Partitions in the module's Test Plan Template format
+
+The module's template asks for Requirement/Function, Partition, Inputs, Expected outputs, Description and Valid/invalid. Three functions are set out in that format below; the tables in section 3 follow the same idea for every other input. "Description" names the automated test that runs the case.
+
+### Task title (FR-042, NFR-007; `validateTaskTitle` in `shared/validators.js`)
+
+| Requirement/Function | Partition | Inputs | Expected outputs | Description | Valid/invalid |
+|---|---|---|---|---|---|
+| Task title | lower boundary | `abc` (3 characters) | ok | TC-V01 | valid |
+| Task title | upper boundary | 20 x `a` | ok | TC-V01, TC-API-20 | valid |
+| Task title | middle of the range | 10 x `a` | ok | TC-PB-01 (random inputs, 400 runs) | valid |
+| Task title | markup removed before counting | `<b>x</b>abc` | ok, stored as `xabc` | TC-PB-01 | valid |
+| Task title | below minimum | `ab` | error, nothing saved | TC-V01, TC-API-20 | invalid |
+| Task title | above maximum | 21 x `a` | error, nothing saved | TC-V01, TC-API-20 | invalid |
+| Task title | empty or only spaces | `"  "` | error | TC-PB-01 | invalid |
+
+### File upload (FR-029, NFR-007; `validateFile` and `sanitizeFileName`)
+
+| Requirement/Function | Partition | Inputs | Expected outputs | Description | Valid/invalid |
+|---|---|---|---|---|---|
+| File upload | exactly the size limit | `data.csv`, 10 MiB | accepted | TC-V04, TC-API-22 | valid |
+| File upload | every allowed type | each type in the allowed list | accepted | TC-V16 | valid |
+| File upload | path in the name | `../../etc/passwd` | accepted, stored as `passwd` | TC-V06, TC-V17 | valid |
+| File upload | one step above the limit | `data.csv`, 10.1 MB | rejected with HTTP 413, no record | TC-V04, TC-API-22 | invalid |
+| File upload | empty file | `a.pdf`, 0 bytes | rejected | TC-V05, TC-API-23 | invalid |
+| File upload | unsupported type | `run.exe` | rejected | TC-V05, TC-API-23 | invalid |
+| File upload | no file | `null` | rejected | TC-V05 | invalid |
+| File upload | not a project member | valid file, outsider | rejected | TC-API-23 | invalid |
+
+### Request transition (FR-016, NFR-009; `canTransitionRequest`, `canActOnRequest`)
+
+| Requirement/Function | Partition | Inputs | Expected outputs | Description | Valid/invalid |
+|---|---|---|---|---|---|
+| Request status | pending to accepted | recipient accepts | allowed | TC-R01, TC-R02, TC-API-17 | valid |
+| Request status | pending to declined | recipient declines | allowed | TC-R01 | valid |
+| Request status | pending to withdrawn | sender withdraws | allowed | TC-R01, TC-R02 | valid |
+| Request status | accepted to declined | any actor | refused | TC-R01 | invalid |
+| Request status | declined to accepted | any actor | refused | TC-R01 | invalid |
+| Request status | sender accepts own request | sender | refused (403) | TC-R02, TC-API-17 | invalid |
+| Request status | recipient withdraws | recipient | refused (403) | TC-R02, TC-API-17 | invalid |
+| Request status | accept and withdraw at the same moment | two clients | one succeeds, the other gets 409 | TC-API-16, TC-D11 | invalid |
 
 ## 3a. Non-functional requirement matrix (every NFR in the Coursework 1 specification)
 
@@ -254,10 +296,10 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 | Cypress specs | **Run in GitHub Actions.** Passed on both runs of `c6654e9`, `f1b2b17` and `109ec2c`, and on the pull-request run of `1d0729f`. One width check on `/notifications` read 15 px too wide on the push run of `1d0729f` while the page was settling; it now waits and retries for 4 s |
 | k6 test | **Run in GitHub Actions** with 50 virtual users for 1 minute. Commit `c6654e9`: 12,172 requests, 0 % failed, p95 10.41 ms, 12,168 of 12,168 checks passed. Later runs: p95 10.12 ms (`1d0729f`), 27.22 ms (`f1b2b17`), 11.34 ms (`109ec2c`). All met the 2 s limit. The 15-minute run is manual and **not run yet** |
 | OWASP ZAP baseline | **Run in GitHub Actions.** First run: 0 FAIL, 7 WARN, 63 PASS. After the fixes: 0 FAIL, 0 WARN, 67 PASS, 4 ignored. After bundling fonts: one false Base64 warning, now ignored with a reason (rule 10094). Commits `1d0729f`, `f1b2b17` and `109ec2c`: **0 FAIL, 0 WARN, 66 PASS, 5 ignored** on every run |
-| Docker image and Compose | Written; **not run** (no Docker in the sandbox); the CI service container uses the same PostgreSQL 16 image |
+| Docker image and Compose | The `Dockerfile` is **built and run by Render** for the live site; `docker-compose.yml` was **not run** by us; the CI service container uses the same PostgreSQL 16 image |
 | Firefox and WebKit browser tests | **Run in GitHub Actions** (the same 24 tests as Chromium; key routes only for axe; one retry). Firefox passed on every run since `30ff8a7`. WebKit: heading wait raised from 8 s to 20 s (`c6654e9`); TC-E2E-10 then ran past its 300 s limit on one slow pull-request run (`f1b2b17`), so each axe run is now capped at 60 s and tried twice and the test limit is 900 s on Firefox and WebKit. **Both passed on both runs of `109ec2c`** |
 | Team contribution tests | 32 tests (`tests/contrib`: A tags, B match, C relativeTime, D fileSize, 8 each), run in `npm test`, by `npm run contrib` and by a CI step: **32 passed, 0 failed** on commit `a815503` (all 12 checks green). Each function was written by one member and merged by its own pull request (#3 to #6; `docs/EVIDENCE.md`) |
-| GitHub Actions workflow | Run on 14 and 15 Nov 2026 (every run link is in `docs/EVIDENCE.md`). **Latest completed run (commit `109ec2c`): all 12 checks green** (push and pull request). Earlier red runs and their causes are in `docs/EVIDENCE.md`. The first k6 run used 1 virtual user because k6 reads `K6_DURATION` itself; the variable is now `LOAD_DURATION` |
+| GitHub Actions workflow | Run on 14 and 15 Nov 2026 (every run link is in `docs/EVIDENCE.md`). **Latest completed runs: pull requests #11, #12 and #13 each had all 12 checks green before merging** (commit `109ec2c` earlier; run links in `docs/EVIDENCE.md`). Earlier red runs and their causes are in `docs/EVIDENCE.md`. The first k6 run used 1 virtual user because k6 reads `K6_DURATION` itself; the variable is now `LOAD_DURATION` |
 
 ## 5. Results (last run: see timestamps inside the evidence files)
 
@@ -267,7 +309,7 @@ CI (`.github/workflows/ci.yml`) runs lint, the Vite build, unit tests, the cover
 - **Accessibility** (TC-E2E-10): axe-core with the WCAG 2.0/2.1 A and AA rule sets, 24 routes (9 public, 13 signed-in student, 2 administrator) at 360, 768 and 1280 px: no serious or critical violation after fixing the issues the first run found (avatar contrast, a mismatched accessible name, missing link underlines, a progressbar without a name, an unlabelled field, nested interactive controls, scrollable regions without keyboard access).
 - **Load** (50 users x 40 requests, 70 % reads / 30 % writes, real PostgreSQL, in-process HTTP stack): 2,000 requests, p50 about 110 ms, p95 about 200 ms, max about 360 ms (two runs gave 108, 195, 350 and 119, 216, 372 ms), 0 server errors; NFR-018 asks for p95 < 2 s. The 15-minute k6 run was not executed.
 - **Backup/restore** (NFR-008): `TC-D10` takes a `pg_dump`, checks the SHA-256, restores into a scratch database, compares per-table row counts with the manifest and detects a tampered dump.
-- **Honest reading of coverage.** Branch coverage is lower (82 %) because defensive branches in `services.js` and `validators.js` (type checks on malformed input) are not individually driven. Line coverage shows each use case ran; the partition tables in section 3 show which input classes were chosen.
+- **Honest reading of coverage.** Branch coverage is lower (83 %) because defensive branches in `services.js` and `validators.js` (type checks on malformed input) are not individually driven. Line coverage shows each use case ran; the partition tables in section 3 show which input classes were chosen.
 
 ## Traceability: every automated test case (plan -> test)
 

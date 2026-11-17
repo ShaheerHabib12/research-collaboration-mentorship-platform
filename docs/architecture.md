@@ -53,8 +53,22 @@ The first implementation drifted from Coursework 1 (vanilla JavaScript, `node:ht
 | Hosting target | not specified | Render (Express serves the built client); Supabase PostgreSQL through the Session pooler (`?sslmode=require`) | Vercel is unsuitable for a long-running Express server. |
 | Real administrator account | not specified | `muhammad.habib@myport.ac.uk`, created on first start with its own password | Separates the real admin from demo accounts. |
 | Payment provider (C10) | external provider | **sandbox** outcome selector (success / failed / pending) | No provider test-mode account was available; entitlements change only on confirmed success. |
-| TLS (NFR-003) | HTTPS | provided by the host or reverse proxy; the app redirects and sends HSTS with `RCMP_FORCE_HTTPS=1` | Node does not terminate TLS itself in this design. |
-| Cypress, k6, ZAP, Docker, GitHub Actions | specified | files written (`cypress/`, `k6/`, `.zap/`, `Dockerfile`, `.github/workflows/ci.yml`) | Cypress, k6 and ZAP run in GitHub Actions (links in `EVIDENCE.md`). Docker could not be run in the build sandbox; Playwright + axe-core and a Node load test were also run locally for the same checks (see `TEST_PLAN.md`). |
+| TLS (NFR-003) | HTTPS | provided by the host: Render terminates TLS for the live site (certificate issued by Render for rcmp-team02.me); the app redirects and sends HSTS with `RCMP_FORCE_HTTPS=1` | Node does not terminate TLS itself in this design. |
+| Cypress, k6, ZAP, Docker, GitHub Actions | specified | files written (`cypress/`, `k6/`, `.zap/`, `Dockerfile`, `.github/workflows/ci.yml`) | Cypress, k6 and ZAP run in GitHub Actions (links in `EVIDENCE.md`). The `Dockerfile` is built and run by Render for the live site (`docker-compose.yml` was not run by us); Playwright + axe-core and a Node load test were also run locally for the same checks (see `TEST_PLAN.md`). |
+
+## Comparison with the December architectural model (Iteration 2 template)
+
+The model was regenerated from the code (`server/`, `shared/`, `client/src`) and compared with Figure 2 of Coursework 1.
+
+| Question from the template | Answer | Evidence in the code |
+|---|---|---|
+| Are the components identical? | The ten components C1 to C10 are the same and keep their responsibilities. Three code units are new and sit outside the December model: `mailer.js` (e-mail through an HTTPS API), `assistant.js` (Scout help) and `backup.js` (checksummed backup and restore check). | `server/` |
+| Are the relationships identical? | No. (1) The after-save event bus in C7 became a function call inside the request transaction (`notify`), so a change and its notification commit or roll back together. (2) The six API entry points of C2 became one route table (71 routes) in `app.js` that calls the modules. (3) C5 reads mentor profiles through the data layer; there is no `getProfile()` call from C5 to C3. (4) The payment provider is a sandbox; the e-mail provider is a new external service. | `server/app.js`, `server/services.js`, `server/db.js` |
+| Has the architectural pattern changed? | No. It is still a closed three-layer client-server modular monolith with one deployable Node.js process and no broker. | `server/index.js` |
+| Were components split into sub-components? | Not as separate deployable parts. C3 to C7 and C10 stay logical modules in `services.js`; the data layer gained a Unit of Work (`db.js`) and a connection pool (`pool.js`). | `server/db.js`, `server/pool.js` |
+| Were components merged? | Yes, in the logic: the six API entry points are merged into the single gateway C2, and the event bus C7 is merged into the Unit of Work. | `server/app.js`, `server/db.js` |
+
+Rationale: with 50 users (NFR-018) and five developers, a transaction that covers the change and its notification is simpler and safer than eventual delivery (NFR-009, NFR-010).
 
 ## Data model (tables)
 
@@ -103,5 +117,5 @@ Each row also holds the full entity as JSONB in `data`, next to the constrained 
 6. **No malware scanning** of uploads; type and size are validated only.
 7. **Payments and payouts are sandbox simulations**; no real provider is called.
 8. **Browser tests run in Chromium locally; Firefox and WebKit run only in GitHub Actions** (with one retry on a timing failure). Real Safari and real phones are untested.
-9. **Docker and the 15-minute k6 run have not been executed yet** by the team (see `TEST_PLAN.md`).
+9. **`docker-compose.yml` and the 15-minute k6 run have not been executed** by the team. The `Dockerfile` is built and run by Render for the live site (see `TEST_PLAN.md`).
 10. **No real-user usability study yet** (NFR-014).

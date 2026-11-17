@@ -1,8 +1,8 @@
 {
  "counts": {
-  "Implemented": 67,
+  "Implemented": 68,
   "Deferred": 4,
-  "Partial": 11,
+  "Partial": 10,
   "Simulated": 6
  },
  "rows": {
@@ -584,16 +584,16 @@
   ],
   "NFR-003": [
    "HTTPS/TLS in deployed environments",
-   "Partial",
-   "Redirect and HSTS tested; TLS itself is terminated by a proxy and was not run",
-   "app.js forceHttps",
+   "Implemented",
+   "The hosted site is served over HTTPS at rcmp-team02.me with a certificate issued by Render, which terminates TLS in front of the Node process; redirect and HSTS are tested; the TLS version was not measured",
+   "app.js forceHttps; Render proxy",
    "TC-API-57, 58",
    "Deployment step"
   ],
   "NFR-004": [
    "Input validation; injection, XSS, access control",
    "Implemented",
-   "No external scanner (OWASP ZAP) run",
+   "OWASP ZAP baseline runs in CI: 0 failures, 0 warnings, ignored rules explained in .zap/rules.tsv",
    "validators.js; pg.js; app.js",
    "TC-V07; TC-API-03, 10, 30, 59; TC-PG03; TC-E2E-05",
    "-"
@@ -649,7 +649,7 @@
   "NFR-011": [
    "Responsive layouts",
    "Implemented",
-   "Checked at 360, 768 and 1280 px in Chromium only",
+   "Checked at 360, 768 and 1280 px in Chromium; Firefox and WebKit run the same tests in CI",
    "styles.css",
    "TC-E2E-06",
    "-"
@@ -673,7 +673,7 @@
   "NFR-014": [
    "Test core workflows with representative users",
    "Partial",
-   "A protocol exists (docs/USER_TESTING.md); sessions are the team's to run",
+   "A protocol exists (docs/USER_TESTING.md); no sessions have been run",
    "-",
    "-",
    "-"
@@ -705,7 +705,7 @@
   "NFR-018": [
    "50 users: 95 % within 2 s; uploads <= 10 MB; availability, RPO/RTO",
    "Partial",
-   "Node load smoke test: 2,000 requests, p95 about 200 ms; k6 script (50 users, 15 min) written but not run; monthly availability not measured",
+   "Node load smoke test: 2,000 requests, p95 about 200 ms; k6 with 50 users runs for 1 minute in CI (12,172 requests, p95 10.4 ms); the 15-minute run was not done; monthly availability not measured",
    "tests/load.js",
    "TC-API-22; load test",
    "-"

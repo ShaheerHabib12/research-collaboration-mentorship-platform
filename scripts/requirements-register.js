@@ -91,22 +91,22 @@ fr(56, 'Payment approvals, payout status, failed payouts, audit trail', S, 'Payo
 const nfr = (n, text, st, ch, unit, tests, rip) => add('NFR-' + pad(n), text, st, ch, unit, tests, rip);
 nfr(1, 'Role and membership permissions', I, '-', 'C2, C3-C6', 'TC-API-05, 06, 13, 19, 24, 25, 35; TC-E2E-02');
 nfr(2, 'Salted password hashing; no raw passwords in logs', I, 'bcrypt (12 rounds) with per-user salt', 'auth.js', 'TC-A01, A02; TC-API-02, 04');
-nfr(3, 'HTTPS/TLS in deployed environments', P, 'Redirect and HSTS tested; TLS itself is terminated by a proxy and was not run', 'app.js forceHttps', 'TC-API-57, 58', 'Deployment step');
-nfr(4, 'Input validation; injection, XSS, access control', I, 'No external scanner (OWASP ZAP) run', 'validators.js; pg.js; app.js', 'TC-V07; TC-API-03, 10, 30, 59; TC-PG03; TC-E2E-05');
+nfr(3, 'HTTPS/TLS in deployed environments', I, 'The hosted site is served over HTTPS at rcmp-team02.me with a certificate issued by Render, which terminates TLS in front of the Node process; redirect and HSTS are tested; the TLS version was not measured', 'app.js forceHttps; Render proxy', 'TC-API-57, 58', 'Deployment step');
+nfr(4, 'Input validation; injection, XSS, access control', I, 'OWASP ZAP baseline runs in CI: 0 failures, 0 warnings, ignored rules explained in .zap/rules.tsv', 'validators.js; pg.js; app.js', 'TC-V07; TC-API-03, 10, 30, 59; TC-PG03; TC-E2E-05');
 nfr(5, 'Privacy notice; data minimisation', I, '-', 'client/src/pages/Privacy.jsx', 'TC-API-07');
 nfr(6, 'Document deletion and retention; review/update profile', I, 'Export and deletion endpoints added', 'C3', 'TC-API-08, 09');
 nfr(7, 'Validate input; understandable errors', I, '-', 'validators.js; api-client.js', 'TC-V01..V09; TC-API-01, 20; TC-E2E-03');
 nfr(8, 'Backups; RPO 24 h, RTO 4 h; restore evidence', I, 'pg_dump with a checksummed manifest; restore into a scratch database compares row counts; scheduled job is documented, not run', 'server/backup.js', 'TC-D10');
 nfr(9, 'Only legitimate transitions; concurrent loser rejected', I, '-', 'rules.js; db.js advisory lock', 'TC-R01; TC-D04, D11; TC-API-16, 17');
 nfr(10, 'Report saves; communicate issues', I, '-', 'api-client.js; db.js', 'TC-D07, D08; TC-API-26, 27, 53');
-nfr(11, 'Responsive layouts', I, 'Checked at 360, 768 and 1280 px in Chromium only', 'styles.css', 'TC-E2E-06');
+nfr(11, 'Responsive layouts', I, 'Checked at 360, 768 and 1280 px in Chromium; Firefox and WebKit run the same tests in CI', 'styles.css', 'TC-E2E-06');
 nfr(12, 'Consistent language and status wording', P, 'Status and role wording is checked automatically; the tone of longer texts is reviewed by hand only', 'client/src/components/ui.jsx labels', 'TC-CS-01, 02, 03');
 nfr(13, 'Keyboard, focus, labels, contrast', P, 'axe-core (WCAG 2.1 A/AA, serious and critical) passes on all routes at 360, 768 and 1280 px; labels, names and structure are tested; screen-reader use and WCAG 2.2-only criteria are not checked', 'client/src', 'TC-E2E-08, 10');
-nfr(14, 'Test core workflows with representative users', P, 'A protocol exists (docs/USER_TESTING.md); sessions are the team\'s to run', '-', '-');
+nfr(14, 'Test core workflows with representative users', P, 'A protocol exists (docs/USER_TESTING.md); no sessions have been run', '-', '-');
 nfr(15, 'Pagination', I, '-', 'rules.js filterAndPage', 'TC-API-10, 56; TC-R09');
 nfr(16, 'Logs contain no passwords, tokens or file contents', I, '-', 'app.js request log', 'TC-API-04');
 nfr(17, 'Separable modules with independent tests', I, 'Modules are logical units in one process, as designed', 'server/services.js', 'see Traceability in docs/TEST_PLAN.md');
-nfr(18, '50 users: 95 % within 2 s; uploads <= 10 MB; availability, RPO/RTO', P, 'Node load smoke test: 2,000 requests, p95 about 200 ms; k6 script (50 users, 15 min) written but not run; monthly availability not measured', 'tests/load.js', 'TC-API-22; load test');
+nfr(18, '50 users: 95 % within 2 s; uploads <= 10 MB; availability, RPO/RTO', P, 'Node load smoke test: 2,000 requests, p95 about 200 ms; k6 with 50 users runs for 1 minute in CI (12,172 requests, p95 10.4 ms); the 15-minute run was not done; monthly availability not measured', 'tests/load.js', 'TC-API-22; load test');
 
 // ---- Validate ----
 const need = [];
