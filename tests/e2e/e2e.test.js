@@ -201,7 +201,7 @@ T('TC-E2E-12 Scout: hover vibrates, click opens, answers in scope, declines off-
   await p.waitForSelector('.scout-launch');
   assert.equal(await p.getAttribute('.scout-launch', 'aria-expanded'), 'false');
   await p.hover('.scout-launch');
-  assert.ok(await p.evaluate(() => document.querySelector('.scout-launch').classList.contains('shake')), 'vibration class applied on hover');
+  await p.waitForFunction(() => document.querySelector('.scout-launch').classList.contains('shake'), null, { timeout: 3000 }); // vibration class applied on hover (waits, because WebKit applies it a moment later)
   await p.waitForFunction(() => !document.querySelector('.scout-launch').classList.contains('shake'), null, { timeout: 3000 }); // plays three times, then stops
   await p.click('.scout-launch');
   assert.equal(await p.getAttribute('.scout-launch', 'aria-expanded'), 'true');

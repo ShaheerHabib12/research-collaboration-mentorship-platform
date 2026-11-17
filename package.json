@@ -31,7 +31,7 @@
     "test:security": "jest --runInBand tests/security",
     "test:contract": "jest --runInBand tests/contract",
     "mutation": "stryker run",
-    "audit:deps": "npm audit --omit=dev && npm --prefix client audit",
+    "audit:deps": "npm audit --omit=dev && npm --prefix client audit --omit=dev",
     "e2e:firefox": "BROWSER=firefox jest --runInBand tests/e2e",
     "e2e:webkit": "BROWSER=webkit jest --runInBand tests/e2e",
     "contrib": "jest --runInBand --testPathPatterns=tests/contrib --testPathIgnorePatterns=/node_modules/"
