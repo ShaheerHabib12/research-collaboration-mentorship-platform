@@ -301,7 +301,7 @@ Generated from ``scripts/requirements-register.js``. Every Coursework 1 requirem
      - TC-A01, A02; TC-API-02, 04
    * - NFR-003
      - HTTPS/TLS in deployed environments
-     - Partial
+     - Implemented
      - TC-API-57, 58
    * - NFR-004
      - Input validation; injection, XSS, access control

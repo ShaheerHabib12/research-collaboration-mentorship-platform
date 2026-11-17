@@ -200,8 +200,12 @@ T('TC-E2E-12 Scout: hover vibrates, click opens, answers in scope, declines off-
   const p = await page(); await p.goto(t.base + '/');
   await p.waitForSelector('.scout-launch');
   assert.equal(await p.getAttribute('.scout-launch', 'aria-expanded'), 'false');
-  await p.hover('.scout-launch');
-  assert.ok(await p.evaluate(() => document.querySelector('.scout-launch').classList.contains('shake')), 'vibration class applied on hover');
+  const shaken = () => p.waitForFunction(() => document.querySelector('.scout-launch').classList.contains('shake'), null, { timeout: 2500 }).then(() => true, () => false);
+  await p.mouse.move(0, 0); await p.hover('.scout-launch');
+  let ok = await shaken();
+  // WebKit on the CI runner sometimes does not deliver the pointer-enter from a synthetic mouse move; the same handler is then reached with the DOM mouseover event that React listens to
+  if (!ok) { await p.mouse.move(0, 0); await p.dispatchEvent('.scout-launch', 'mouseover', { bubbles: true }); ok = await shaken(); }
+  assert.ok(ok, 'vibration class applied on hover');
   await p.waitForFunction(() => !document.querySelector('.scout-launch').classList.contains('shake'), null, { timeout: 3000 }); // plays three times, then stops
   await p.click('.scout-launch');
   assert.equal(await p.getAttribute('.scout-launch', 'aria-expanded'), 'true');

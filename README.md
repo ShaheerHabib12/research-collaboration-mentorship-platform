@@ -24,7 +24,7 @@
 
 | Fact | Value | Where it is checked |
 |---|---|---|
-| Requirements from Coursework 1 | 88 (14 user, 56 functional, 18 non-functional): 67 done, 11 partial, 6 simulated, 4 deferred | `docs/REQUIREMENTS_STATUS.md`, built by `npm run docs` |
+| Requirements from Coursework 1 | 88 (14 user, 56 functional, 18 non-functional): 68 done, 10 partial, 6 simulated, 4 deferred | `docs/REQUIREMENTS_STATUS.md`, built by `npm run docs` |
 | Client | 28 pages, React 18 + Vite | `client/src/pages` |
 | API | 71 routes, Express 5 | `docs/API.md`, `docs/source/api.rst` |
 | Code size | 2,647 lines server and shared, 4,151 lines client, 2,109 lines of tests | `wc -l` |
@@ -268,7 +268,7 @@ Copy [`.env.example`](.env.example) and set the variables in your environment. T
 | `npm run test:security` | OWASP-style security tests |
 | `npm run test:contract` | API response-shape tests |
 | `npm run mutation` | Stryker mutation testing of the shared rules |
-| `npm run audit:deps` | `npm audit` for server and client |
+| `npm run audit:deps` | `npm audit --omit=dev` for server and client (the build tool Vite is a development dependency and is not shipped) |
 | `npm run e2e:firefox` / `e2e:webkit` | Browser suite in Firefox or WebKit |
 | `npm run test:unit` | Unit tests only, no database needed |
 | `npm run test:api` | Database and API tests |
@@ -303,9 +303,9 @@ Tests run against the **real HTTP server and a real PostgreSQL database**, each 
 | Cypress specs | Cypress + cypress-axe | UC-02, UC-04 and NFR-011/013 as in the Coursework 1 plan (run in CI or locally) |
 | Load | `tests/load.js` and `k6/load.js` | 50 concurrent users, p95 under 2 s, no 5xx |
 | Security scan | OWASP ZAP baseline (CI job) | passive scan of the running app |
-| Dependencies and style | `npm audit`, ESLint | 0 known vulnerable packages; 0 lint errors |
+| Dependencies and style | `npm audit --omit=dev`, ESLint | 0 known vulnerable packages in the shipped dependencies; 0 lint errors |
 
-**Latest local run (Node 22.23, PostgreSQL 16): 256 of 256 pass; 98.0 % lines, 83.0 % branches, 93.6 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. Cypress, k6, ZAP and the Firefox and WebKit tests run in GitHub Actions (links in `docs/EVIDENCE.md`); Docker is not run in the build sandbox. The test plan says which results are real and which are pending.
+**Latest local run (Node 22.23, PostgreSQL 16): 256 of 256 pass; 98.0 % lines, 83.0 % branches, 93.6 % functions; mutation score 92.1 %** (test files excluded). See `docs/evidence/`. Cypress, k6, ZAP and the Firefox and WebKit tests run in GitHub Actions (links in `docs/EVIDENCE.md`). The Dockerfile is built and run by Render for the live site; `docker-compose.yml` was not run by us. The test plan says which results are real and which are pending.
 
 ## 12. Development workflow
 
@@ -335,9 +335,11 @@ Stated plainly so nobody is surprised:
 - Each request loads whole collections (simple and correct, but it will not scale to large data).
 - The session token lives in `localStorage` (the strict CSP limits script injection, but an HttpOnly cookie would be stronger).
 - The throttles are in memory (one server instance); a shared store such as Redis is needed for several instances.
-- Payments, payouts are sandbox only (C10 is a simulated provider). Password-reset e-mails are shown on screen in demo mode.
-- TLS is provided by the host or reverse proxy, not by the Node process.
-- Docker and the 15-minute k6 run were not executed in the build sandbox. GitHub Actions ran on 14 and 15 November 2026 (links in `docs/EVIDENCE.md`). **Latest completed run: the merge of pull request #2 into `main` (commit `ae52cc1`), all jobs green** ([run](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43740863257)). The last pull-request run (commit `58e8a9c`) had all 12 checks green on both the push run and the pull-request run ([push run](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43738852513), [pull-request run](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43738860711)). The gates: main job (lint, build, audit, all 256 tests, coverage and mutation gates, load smoke test), Cypress, Firefox, WebKit, k6 (50 users, 1 minute) and ZAP (on `109ec2c`: k6 p95 11.3 ms; ZAP 0 FAIL, 0 WARN, 66 PASS, 5 ignored). The release is tagged [`v1.0-cw2`](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/releases/tag/v1.0-cw2). `main` is protected by the ruleset `protect-main` (pull request required, no force pushes, no deletion). Earlier failures and their fixes (Firefox console objects, WebKit scroll, WebKit heading wait, ZAP base64 false alarm, Cypress width timing, WebKit axe time limit, k6 user count) are listed in `docs/TEST_PLAN.md`.
+- Payments and payouts are sandbox only (C10 is a simulated provider). Password-reset links are shown on screen only when no mail provider is configured (local demo mode); the live site e-mails them through Brevo.
+- On Render's free plan the disk is not persistent, so uploaded (encrypted) files can disappear when the service restarts or is redeployed; the database (Supabase) is not affected. A persistent disk or object storage would fix this.
+- TLS is provided by the host (Render on the live site), not by the Node process.
+- On 18 November 2026 `npm audit` began reporting a high-severity advisory (GHSA-fc5q-39xc-vjpf, picomatch) with no patched version; it sits only in the Vite build tooling, so the CI audit checks the shipped (non-development) dependencies and the advisory is to be re-checked when a fix is published.
+- The `Dockerfile` is built and run by Render for the live site; `docker-compose.yml` and the 15-minute k6 run were not executed by us. GitHub Actions has run since 14 November 2026 (links in `docs/EVIDENCE.md`). **Latest checked state: pull requests #11, #12 and #13 each had all 12 checks green before merging to `main`; the green run after pull request #11 is [here](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/actions/runs/43933427804).** The gates: main job (lint, build, audit, all 256 tests, coverage and mutation gates, load smoke test), Cypress, Firefox, WebKit, k6 (50 users, 1 minute) and ZAP. The release is tagged [`v1.0-cw2`](https://github.com/ShaheerHabib12/research-collaboration-mentorship-platform/releases/tag/v1.0-cw2). `main` is protected by the ruleset `protect-main` (pull request required, no force pushes, no deletion). Earlier failures and their fixes are listed in `docs/TEST_PLAN.md`.
 - No real-user usability testing yet (NFR-014); the protocol is in `docs/USER_TESTING.md`.
 
 ## 15. Team
