@@ -164,6 +164,16 @@ RCMP has a light theme and a dark theme. The sun and moon button in the top bar 
 | ![Pricing, dark](docs/screenshots/11-pricing-dark.png) **Public pricing** | ![Login, dark](docs/screenshots/02-login-dark.png) **Sign in** |
 | ![Mobile, dark](docs/screenshots/10-mobile-dashboard-dark.png) **Mobile layout** | ![3-D stack, dark](docs/screenshots/17-stack-3d-dark.png) **Drag-to-rotate 3-D stack** |
 
+### Real e-mail check, 16 November 2026
+
+The live site sent a real sign-up PIN and a real password-reset e-mail through Brevo to a Gmail inbox (steps 1 to 9, in order). Details: [`docs/evidence/email/`](docs/evidence/email/README.md).
+
+| | | |
+|---|---|---|
+| ![Sign-up: 6-digit code sent](docs/evidence/email/01-sign-up.png) **Sign-up: 6-digit code sent** | ![PIN e-mail in Gmail](docs/evidence/email/02-code-at-e-mail.png) **PIN e-mail in Gmail** | ![Code entered](docs/evidence/email/03-enter-code.png) **Code entered** |
+| ![Account created, profile page](docs/evidence/email/04-land-to-profile-page.png) **Account created, profile page** | ![Forgot password: link sent](docs/evidence/email/05-forget-password.png) **Forgot password: link sent** | ![Reset e-mail in Gmail](docs/evidence/email/06-link-on-e-mail.png) **Reset e-mail in Gmail** |
+| ![Choose a new password](docs/evidence/email/07-add-new-password.png) **Choose a new password** | ![Password changed](docs/evidence/email/08-password-successfully-changed.png) **Password changed** | ![Signed in: student dashboard](docs/evidence/email/09-land-to-dashboard.png) **Signed in: student dashboard** |
+
 ### Live site check, 18 November 2026
 
 After the final merge (pull request #14) and the Render deploy, the team used the hosted site at https://rcmp-team02.me in production mode: a new student account was created, a project brief was published, a PDF was uploaded to the private files and downloaded again (the site decrypts it on the server), and the real administrator account was signed in. These are screenshots of that session; the files are in `docs/evidence/live/`.
